@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Update Perjalanan | Ekspedisi MVP</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #FF5A00;
+  --primary-dark: #D94E00;
+  --primary-light: #FF7A30;
+  --black: #0F0F0F;
+  --dark: #1A1A1A;
+  --card: #222222;
+  --border: #333333;
+  --white: #F5F0EB;
+  --muted: #888888;
+  --green: #22C55E;
+  --yellow: #FBBF24;
+  --red: #EF4444;
+  --blue: #3B82F6;
+  --purple: #8B5CF6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+  font-family: 'Inter', sans-serif; 
+  background: var(--black); 
+  color: var(--white); 
+  min-height: 100vh;
+  padding-bottom: 2rem;
+}
+
+/* Header */
+.header {
+  background: var(--dark);
+  border-bottom: 1px solid var(--border);
+  padding: 1.25rem;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.logo span { color: var(--primary); }
+
+.header p {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+/* Main Container */
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1.25rem;
+}
+
+/* Card */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--white);
+}
+
+.form-label span {
+  color: var(--red);
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: var(--black);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--white);
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form-input::placeholder {
+  color: var(--muted);
+}
+
+/* Status Options */
+.status-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.status-option {
+  position: relative;
+}
+
+.status-option input {
+  position: absolute;
+  opacity: 0;
+}
+
+.status-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--black);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.status-label .icon {
+  font-size: 1.5rem;
+}
+
+.status-label .text {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-option input:checked + .status-label {
+  border-color: var(--primary);
+  background: rgba(255, 90, 0, 0.1);
+}
+
+.status-option input:checked + .status-label .text {
+  color: var(--primary);
+}
+
+/* File Upload */
+.file-upload {
+  position: relative;
+}
+
+.file-upload input[type="file"] {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.file-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  background: var(--black);
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.file-upload-label:hover {
+  border-color: var(--primary);
+}
+
+.file-upload-label .icon {
+  font-size: 2rem;
+}
+
+.file-upload-label .text {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.file-preview {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.file-preview img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+/* Button */
+.btn {
+  width: 100%;
+  padding: 1rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn:hover {
+  background: var(--primary-dark);
+}
+
+.btn:disabled {
+  background: var(--border);
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--border);
+}
+
+/* Success Message */
+.success-message {
+  display: none;
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+.success-message.show {
+  display: block;
+}
+
+.success-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.success-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.success-text {
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+/* History */
+.history-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.history-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-time {
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.history-content {
+  flex: 1;
+}
+
+.history-status {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.history-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-muat { background: rgba(139, 92, 246, 0.2); color: var(--purple); }
+.badge-jalan { background: rgba(251, 191, 36, 0.2); color: var(--yellow); }
+.badge-sampai { background: rgba(255, 90, 0, 0.2); color: var(--primary); }
+.badge-bongkar { background: rgba(34, 197, 94, 0.2); color: var(--green); }
+
+/* Loading */
+.loading {
+  display: none;
+  text-align: center;
+  padding: 2rem;
+}
+
+.loading.show {
+  display: block;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.quick-action {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--white);
+  transition: all 0.2s;
+}
+
+.quick-action:hover {
+  border-color: var(--primary);
+  background: rgba(255, 90, 0, 0.05);
+}
+
+.quick-action .icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.quick-action .text {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Info Box */
+.info-box {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.info-box .icon {
+  font-size: 1.25rem;
+}
+
+.info-box .content {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--white);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .status-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .container {
+    padding: 1rem;
+  }
+}
+</style>
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+  <div class="logo">🚚 <span>Ekspedisi</span>MVP</div>
+  <p>Form Update Perjalanan Sopir</p>
+</header>
+
+<div class="container">
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <a href="admin.html" class="quick-action">
+      <div class="icon">📊</div>
+      <div class="text">Dashboard Admin</div>
+    </a>
+    <a href="tracking_online.html" class="quick-action" target="_blank">
+      <div class="icon">📍</div>
+      <div class="text">Tracking Customer</div>
+    </a>
+  </div>
+
+  <!-- Info Box -->
+  <div class="info-box">
+    <span class="icon">ℹ️</span>
+    <div class="content">
+      Gunakan form ini untuk melaporkan status perjalanan. Admin akan menerima update secara real-time.
+    </div>
+  </div>
+
+  <!-- Form Section -->
+  <div id="form-section">
+    <div class="card">
+      <h2 class="card-title">📝 Form Update</h2>
+      
+      <form id="update-form">
+        <!-- No Order -->
+        <div class="form-group">
+          <label class="form-label">Nomor Order <span>*</span></label>
+          <input type="text" class="form-input" id="order-id" placeholder="Contoh: ORD-001" required>
+        </div>
+
+        <!-- Driver Name -->
+        <div class="form-group">
+          <label class="form-label">Nama Sopir <span>*</span></label>
+          <input type="text" class="form-input" id="driver-name" placeholder="Nama lengkap sopir" required>
+        </div>
+
+        <!-- Status Update -->
+        <div class="form-group">
+          <label class="form-label">Status Update <span>*</span></label>
+          <div class="status-options">
+            <label class="status-option">
+              <input type="radio" name="status" value="MUAT" required>
+              <div class="status-label">
+                <span class="icon">📦</span>
+                <span class="text">MUAT BARANG</span>
+              </div>
+            </label>
+            <label class="status-option">
+              <input type="radio" name="status" value="JALAN">
+              <div class="status-label">
+                <span class="icon">🚚</span>
+                <span class="text">PERJALANAN</span>
+              </div>
+            </label>
+            <label class="status-option">
+              <input type="radio" name="status" value="SAMPAI">
+              <div class="status-label">
+                <span class="icon">📍</span>
+                <span class="text">SAMPAI TUJUAN</span>
+              </div>
+            </label>
+            <label class="status-option">
+              <input type="radio" name="status" value="BONGKAR">
+              <div class="status-label">
+                <span class="icon">✅</span>
+                <span class="text">BONGKAR SELESAI</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Photo Upload -->
+        <div class="form-group">
+          <label class="form-label">Upload Foto (opsional)</label>
+          <div class="file-upload">
+            <input type="file" id="photo" accept="image/*" multiple onchange="previewFiles(this)">
+            <div class="file-upload-label">
+              <span class="icon">📷</span>
+              <span class="text">Klik untuk upload foto<br><small>Surat jalan / Barang</small></span>
+            </div>
+          </div>
+          <div class="file-preview" id="file-preview"></div>
+        </div>
+
+        <!-- Notes -->
+        <div class="form-group">
+          <label class="form-label">Catatan (opsional)</label>
+          <input type="text" class="form-input" id="catatan" placeholder="Tambahkan catatan jika perlu...">
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn" id="submit-btn">
+          <span>📤</span> Kirim Update
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading" id="loading-section">
+    <div class="spinner"></div>
+    <p>Mengirim update...</p>
+  </div>
+
+  <!-- Success State -->
+  <div class="success-message" id="success-section">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Update Terkirim!</div>
+    <div class="success-text">Status perjalanan berhasil dilaporkan ke admin.</div>
+    <button class="btn" onclick="resetForm()">Kirim Update Lain</button>
+  </div>
+
+  <!-- Recent History -->
+  <div class="card" id="history-section">
+    <h2 class="card-title">🕐 Riwayat Update Terbaru</h2>
+    <div class="history-list" id="history-list">
+      <div class="loading show">
+        <div class="spinner"></div>
+        <p>Memuat data...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// API Config
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+
+// State
+let uploadedFiles = [];
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  loadRecentHistory();
+  
+  // Pre-fill from URL params if available
+  const urlParams = new URLSearchParams(window.location.search);
+  const orderId = urlParams.get('order');
+  if (orderId) {
+    document.getElementById('order-id').value = orderId;
+  }
+});
+
+// Preview uploaded files
+function previewFiles(input) {
+  const preview = document.getElementById('file-preview');
+  preview.innerHTML = '';
+  uploadedFiles = [];
+  
+  if (input.files && input.files.length > 0) {
+    for (let file of input.files) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        uploadedFiles.push(e.target.result);
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+}
+
+// Form submission
+document.getElementById('update-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const orderId = document.getElementById('order-id').value.toUpperCase();
+  const driverName = document.getElementById('driver-name').value;
+  const status = document.querySelector('input[name="status"]:checked')?.value;
+  const catatan = document.getElementById('catatan').value;
+  
+  if (!orderId || !driverName || !status) {
+    alert('Mohon lengkapi data yang wajib diisi');
+    return;
+  }
+  
+  // Show loading
+  document.getElementById('form-section').style.display = 'none';
+  document.getElementById('loading-section').classList.add('show');
+  
+  try {
+    // For MVP, we'll use base64 for photos if any
+    const fotoUrl = uploadedFiles.length > 0 ? uploadedFiles[0] : '';
+    
+    const data = {
+      order_id: orderId,
+      driver_nama: driverName,
+      status_update: status,
+      foto_url: fotoUrl,
+      catatan: catatan
+    };
+    
+    const response = await fetch(`${API_URL}/drivers/logs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Show success
+      document.getElementById('loading-section').classList.remove('show');
+      document.getElementById('success-section').classList.add('show');
+      
+      // Refresh history
+      loadRecentHistory();
+    } else {
+      throw new Error(result.error || 'Gagal mengirim update');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan: ' + error.message);
+    
+    // Show form again
+    document.getElementById('loading-section').classList.remove('show');
+    document.getElementById('form-section').style.display = 'block';
+  }
+});
+
+// Reset form
+function resetForm() {
+  document.getElementById('update-form').reset();
+  document.getElementById('file-preview').innerHTML = '';
+  uploadedFiles = [];
+  
+  document.getElementById('success-section').classList.remove('show');
+  document.getElementById('form-section').style.display = 'block';
+}
+
+// Load recent history
+async function loadRecentHistory() {
+  try {
+    const response = await fetch(`${API_URL}/drivers/logs/all?limit=10`);
+    const result = await response.json();
+    
+    const historyList = document.getElementById('history-list');
+    
+    if (result.success && result.data.length > 0) {
+      historyList.innerHTML = result.data.slice(0, 5).map(log => `
+        <div class="history-item">
+          <div class="history-time">${formatTime(log.created_at)}</div>
+          <div class="history-content">
+            <div class="history-status">
+              <span class="badge badge-${log.status_update.toLowerCase()}">${log.status_update}</span>
+              <strong>${log.order_id}</strong>
+            </div>
+            <div class="history-note">
+              ${log.driver_nama} ${log.catatan ? '• ' + log.catatan : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      historyList.innerHTML = '<div class="history-item" style="justify-content: center; color: var(--muted);">Belum ada riwayat update</div>';
+    }
+  } catch (error) {
+    console.error('Error loading history:', error);
+    document.getElementById('history-list').innerHTML = '<div class="history-item" style="justify-content: center; color: var(--muted);">Gagal memuat riwayat</div>';
+  }
+}
+
+// Format time
+function formatTime(dateString) {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
+  const now = new Date();
+  const diff = now - date;
+  
+  // Less than 1 hour
+  if (diff < 3600000) {
+    const minutes = Math.floor(diff / 60000);
+    return minutes < 1 ? 'Baru saja' : `${minutes}m lalu`;
+  }
+  
+  // Less than 24 hours
+  if (diff < 86400000) {
+    const hours = Math.floor(diff / 3600000);
+    return `${hours}j lalu`;
+  }
+  
+  return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+}
+</script>
+</body>
+</html>

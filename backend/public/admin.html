@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | Ekspedisi MVP</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #FF5A00;
+  --primary-dark: #D94E00;
+  --primary-light: #FF7A30;
+  --black: #0F0F0F;
+  --dark: #1A1A1A;
+  --card: #222222;
+  --border: #333333;
+  --white: #F5F0EB;
+  --muted: #888888;
+  --green: #22C55E;
+  --yellow: #FBBF24;
+  --red: #EF4444;
+  --blue: #3B82F6;
+  --purple: #8B5CF6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+  font-family: 'Inter', sans-serif; 
+  background: var(--black); 
+  color: var(--white); 
+  min-height: 100vh;
+}
+
+/* Layout */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  background: var(--dark);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.logo span { color: var(--primary); }
+
+.sidebar-nav {
+  flex: 1;
+  padding: 1rem 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-item:hover, .nav-item.active {
+  color: var(--white);
+  background: rgba(255, 90, 0, 0.1);
+}
+
+.nav-item.active {
+  border-left: 3px solid var(--primary);
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* Main Content */
+.main {
+  flex: 1;
+  margin-left: 260px;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Stats Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.stat-card.primary { border-left: 4px solid var(--primary); }
+.stat-card.green { border-left: 4px solid var(--green); }
+.stat-card.blue { border-left: 4px solid var(--blue); }
+.stat-card.yellow { border-left: 4px solid var(--yellow); }
+.stat-card.red { border-left: 4px solid var(--red); }
+
+/* Content Sections */
+.section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.section-body {
+  padding: 1.25rem;
+}
+
+/* Table */
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+td {
+  font-size: 0.875rem;
+}
+
+tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Status Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.badge-menunggu { background: rgba(136, 136, 136, 0.2); color: var(--muted); }
+.badge-menunggu::before { background: var(--muted); }
+
+.badge-dijadwalkan { background: rgba(59, 130, 246, 0.2); color: var(--blue); }
+.badge-dijadwalkan::before { background: var(--blue); }
+
+.badge-muat { background: rgba(139, 92, 246, 0.2); color: var(--purple); }
+.badge-muat::before { background: var(--purple); }
+
+.badge-jalan { background: rgba(251, 191, 36, 0.2); color: var(--yellow); }
+.badge-jalan::before { background: var(--yellow); }
+
+.badge-bongkar { background: rgba(255, 90, 0, 0.2); color: var(--primary); }
+.badge-bongkar::before { background: var(--primary); }
+
+.badge-selesai { background: rgba(34, 197, 94, 0.2); color: var(--green); }
+.badge-selesai::before { background: var(--green); }
+
+.badge-belum { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+.badge-belum::before { background: var(--red); }
+
+.badge-lunas { background: rgba(34, 197, 94, 0.2); color: var(--green); }
+.badge-lunas::before { background: var(--green); }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover { background: var(--primary-dark); }
+
+.btn-secondary {
+  background: var(--card);
+  color: var(--white);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover { background: var(--border); }
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 0.375rem;
+  color: var(--muted);
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--white);
+  font-size: 0.875rem;
+}
+
+.form-input:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 1.25rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.tab:hover { color: var(--white); }
+
+.tab.active {
+  color: var(--primary);
+  background: rgba(255, 90, 0, 0.1);
+}
+
+/* Search */
+.search-box {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.5rem 0.875rem;
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--white);
+  font-size: 0.875rem;
+}
+
+/* Filter tags */
+.filter-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.filter-tag {
+  padding: 0.375rem 0.75rem;
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: var(--white);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-tag:hover, .filter-tag.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Hide sections */
+.view-section { display: none; }
+.view-section.active { display: block; }
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 1rem; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">🚚 <span>Ekspedisi</span>MVP</div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="showView('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+      <button class="nav-item" onclick="showView('orders')">
+        <span class="nav-icon">📦</span> Orders
+      </button>
+      <button class="nav-item" onclick="showView('drivers')">
+        <span class="nav-icon">👨‍✈️</span> Drivers
+      </button>
+      <button class="nav-item" onclick="showView('customers')">
+        <span class="nav-icon">🏢</span> Customers
+      </button>
+      <button class="nav-item" onclick="showView('billing')">
+        <span class="nav-icon">💰</span> Penagihan
+      </button>
+      <a href="driver-form.html" class="nav-item" target="_blank">
+        <span class="nav-icon">📝</span> Form Sopir
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      MVP v2.0 • Local Mode
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Dashboard View -->
+    <div id="view-dashboard" class="view-section active">
+      <div class="header">
+        <h1>Dashboard</h1>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="openModal('modal-add-order')">+ Order Baru</button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card primary">
+          <div class="stat-label">Total Orders</div>
+          <div class="stat-value" id="stat-total">0</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-label">Dalam Perjalanan</div>
+          <div class="stat-value" id="stat-jalan">0</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Selesai</div>
+          <div class="stat-value" id="stat-selesai">0</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Order Hari Ini</div>
+          <div class="stat-value" id="stat-today">0</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Piutang</div>
+          <div class="stat-value" id="stat-piutang">Rp 0</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">📋 Order Terbaru</span>
+          <button class="btn btn-secondary btn-sm" onclick="showView('orders')">Lihat Semua</button>
+        </div>
+        <div class="section-body">
+          <div class="table-container">
+            <table id="table-recent-orders">
+              <thead>
+                <tr>
+                  <th>No Order</th>
+                  <th>Customer</th>
+                  <th>Rute</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders View -->
+    <div id="view-orders" class="view-section">
+      <div class="header">
+        <h1>Manajemen Orders</h1>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="openModal('modal-add-order')">+ Order Baru</button>
+        </div>
+      </div>
+
+      <div class="filter-tags">
+        <button class="filter-tag active" onclick="filterOrders('')">Semua</button>
+        <button class="filter-tag" onclick="filterOrders('MENUNGGU')">Menunggu</button>
+        <button class="filter-tag" onclick="filterOrders('DIJADWALKAN')">Dijadwalkan</button>
+        <button class="filter-tag" onclick="filterOrders('MUAT')">Muat</button>
+        <button class="filter-tag" onclick="filterOrders('JALAN')">Jalan</button>
+        <button class="filter-tag" onclick="filterOrders('BONGKAR')">Bongkar</button>
+        <button class="filter-tag" onclick="filterOrders('SELESAI')">Selesai</button>
+      </div>
+
+      <div class="search-box" style="margin-bottom: 1rem;">
+        <input type="text" class="search-input" id="search-orders" placeholder="Cari order..." onkeyup="searchOrders()">
+      </div>
+
+      <div class="section">
+        <div class="section-body">
+          <div class="table-container">
+            <table id="table-orders">
+              <thead>
+                <tr>
+                  <th>No Order</th>
+                  <th>Tanggal</th>
+                  <th>Customer</th>
+                  <th>Rute</th>
+                  <th>Sopir</th>
+                  <th>Status</th>
+                  <th>Tagihan</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drivers View -->
+    <div id="view-drivers" class="view-section">
+      <div class="header">
+        <h1>Manajemen Drivers</h1>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="openModal('modal-add-driver')">+ Driver Baru</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-body">
+          <div class="table-container">
+            <table id="table-drivers">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Telepon</th>
+                  <th>No Polisi</th>
+                  <th>Armada</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customers View -->
+    <div id="view-customers" class="view-section">
+      <div class="header">
+        <h1>Manajemen Customers</h1>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="openModal('modal-add-customer')">+ Customer Baru</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-body">
+          <div class="table-container">
+            <table id="table-customers">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Telepon</th>
+                  <th>Alamat</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Billing View -->
+    <div id="view-billing" class="view-section">
+      <div class="header">
+        <h1>Penagihan</h1>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card red">
+          <div class="stat-label">Total Piutang</div>
+          <div class="stat-value" id="billing-piutang">Rp 0</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Sudah Lunas</div>
+          <div class="stat-value" id="billing-lunas">Rp 0</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Belum Lunas</div>
+          <div class="stat-value" id="billing-belum-count">0</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">📋 Daftar Tagihan</span>
+        </div>
+        <div class="section-body">
+          <div class="table-container">
+            <table id="table-billing">
+              <thead>
+                <tr>
+                  <th>No Order</th>
+                  <th>Tanggal</th>
+                  <th>Customer</th>
+                  <th>Nilai Tagihan</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal: Add Order -->
+<div class="modal-overlay" id="modal-add-order">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Order Baru</span>
+      <button class="modal-close" onclick="closeModal('modal-add-order')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">No Order *</label>
+          <input type="text" class="form-input" id="order-id" placeholder="ORD-001">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Customer *</label>
+          <select class="form-select" id="order-customer">
+            <option value="">Pilih Customer</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Titik Muat (A) *</label>
+          <input type="text" class="form-input" id="order-titik-a" placeholder="Surabaya">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Titik Bongkar (B) *</label>
+          <input type="text" class="form-input" id="order-titik-b" placeholder="Jakarta">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Jenis Barang</label>
+          <input type="text" class="form-input" id="order-barang" placeholder="Elektronik">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Assign Driver</label>
+          <select class="form-select" id="order-driver">
+            <option value="">Pilih Driver</option>
+          </select>
+        </div>
+      </div>
+      
+      <hr style="border: none; border-top: 1px solid var(--border); margin: 1.5rem 0;">
+      
+      <h4 style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--muted);">💰 Perhitungan Uang Jalan</h4>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Jarak (km)</label>
+          <input type="number" class="form-input" id="uj-jarak" placeholder="800" onchange="calculateUangJalan()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Konsumsi BBM (km/liter)</label>
+          <input type="number" class="form-input" id="uj-konsumsi" placeholder="5" value="5" onchange="calculateUangJalan()">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Harga BBM/liter</label>
+          <input type="number" class="form-input" id="uj-harga" placeholder="10000" value="10000" onchange="calculateUangJalan()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Biaya Tol</label>
+          <input type="number" class="form-input" id="uj-tol" placeholder="350000" onchange="calculateUangJalan()">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Biaya Makan</label>
+          <input type="number" class="form-input" id="uj-makan" placeholder="150000" onchange="calculateUangJalan()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Total Uang Jalan</label>
+          <input type="text" class="form-input" id="uj-total" readonly style="background: rgba(255,90,0,0.1); color: var(--primary); font-weight: 600;">
+        </div>
+      </div>
+      
+      <div class="form-group" style="margin-top: 1rem;">
+        <label class="form-label">Nilai Tagihan</label>
+        <input type="number" class="form-input" id="order-tagihan" placeholder="5000000">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-add-order')">Batal</button>
+      <button class="btn btn-primary" onclick="submitOrder()">Simpan Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add Driver -->
+<div class="modal-overlay" id="modal-add-driver">
+  <div class="modal" style="max-width: 400px;">
+    <div class="modal-header">
+      <span class="modal-title">Driver Baru</span>
+      <button class="modal-close" onclick="closeModal('modal-add-driver')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Nama *</label>
+        <input type="text" class="form-input" id="driver-nama" placeholder="Budi Santoso">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telepon</label>
+        <input type="text" class="form-input" id="driver-telepon" placeholder="081234567890">
+      </div>
+      <div class="form-group">
+        <label class="form-label">No Polisi Truck</label>
+        <input type="text" class="form-input" id="driver-nopol" placeholder="L 1234 XY">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Armada</label>
+        <select class="form-select" id="driver-armada">
+          <option value="CDD">CDD</option>
+          <option value="CDE">CDE</option>
+          <option value="Fuso">Fuso</option>
+          <option value="Tronton">Tronton</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-add-driver')">Batal</button>
+      <button class="btn btn-primary" onclick="submitDriver()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add Customer -->
+<div class="modal-overlay" id="modal-add-customer">
+  <div class="modal" style="max-width: 400px;">
+    <div class="modal-header">
+      <span class="modal-title">Customer Baru</span>
+      <button class="modal-close" onclick="closeModal('modal-add-customer')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Nama *</label>
+        <input type="text" class="form-input" id="customer-nama" placeholder="PT Maju Jaya">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telepon</label>
+        <input type="text" class="form-input" id="customer-telepon" placeholder="031-1234567">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Alamat</label>
+        <input type="text" class="form-input" id="customer-alamat" placeholder="Jl. Raya Surabaya No. 1">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="customer-email" placeholder="email@company.com">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-add-customer')">Batal</button>
+      <button class="btn btn-primary" onclick="submitCustomer()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Update Status -->
+<div class="modal-overlay" id="modal-update-status">
+  <div class="modal" style="max-width: 400px;">
+    <div class="modal-header">
+      <span class="modal-title">Update Status Order</span>
+      <button class="modal-close" onclick="closeModal('modal-update-status')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="status-order-id">
+      <div class="form-group">
+        <label class="form-label">Status Baru</label>
+        <select class="form-select" id="new-status">
+          <option value="MENUNGGU">MENUNGGU</option>
+          <option value="DIJADWALKAN">DIJADWALKAN</option>
+          <option value="MUAT">MUAT</option>
+          <option value="JALAN">JALAN</option>
+          <option value="BONGKAR">BONGKAR</option>
+          <option value="SELESAI">SELESAI</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Keterangan (opsional)</label>
+        <input type="text" class="form-input" id="status-keterangan" placeholder="Update status...">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-update-status')">Batal</button>
+      <button class="btn btn-primary" onclick="submitStatusUpdate()">Update</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// API Config
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+
+// State
+let currentOrders = [];
+let currentDrivers = [];
+let currentCustomers = [];
+let currentBilling = [];
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+  loadDashboardStats();
+  loadRecentOrders();
+  loadDrivers();
+  loadCustomers();
+  loadBilling();
+});
+
+// Navigation
+function showView(viewName) {
+  document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  
+  document.getElementById(`view-${viewName}`).classList.add('active');
+  event.target.classList.add('active');
+  
+  // Refresh data
+  if (viewName === 'orders') loadOrders();
+  if (viewName === 'drivers') loadDrivers();
+  if (viewName === 'customers') loadCustomers();
+  if (viewName === 'billing') loadBilling();
+}
+
+// Modal Functions
+function openModal(modalId) {
+  document.getElementById(modalId).classList.add('active');
+  if (modalId === 'modal-add-order') {
+    loadDriverOptions();
+    loadCustomerOptions();
+  }
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove('active');
+}
+
+// Format currency
+function formatRupiah(angka) {
+  if (!angka) return 'Rp 0';
+  return 'Rp ' + parseInt(angka).toLocaleString('id-ID');
+}
+
+// Format date
+function formatDate(dateString) {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('id-ID');
+}
+
+// Get status badge HTML
+function getStatusBadge(status) {
+  const statusClass = status ? status.toLowerCase() : 'menunggu';
+  return `<span class="badge badge-${statusClass}">${status || 'MENUNGGU'}</span>`;
+}
+
+// ========== DASHBOARD ==========
+async function loadDashboardStats() {
+  try {
+    const response = await fetch(`${API_URL}/orders/stats/dashboard`);
+    const result = await response.json();
+    
+    if (result.success) {
+      const stats = result.data;
+      document.getElementById('stat-total').textContent = stats.orders.total_orders || 0;
+      document.getElementById('stat-jalan').textContent = stats.orders.jalan || 0;
+      document.getElementById('stat-selesai').textContent = stats.orders.selesai || 0;
+      document.getElementById('stat-today').textContent = stats.today_orders || 0;
+      document.getElementById('stat-piutang').textContent = formatRupiah(stats.billing.total_piutang);
+    }
+  } catch (error) {
+    console.error('Error loading stats:', error);
+  }
+}
+
+async function loadRecentOrders() {
+  try {
+    const response = await fetch(`${API_URL}/orders/recent/list?limit=5`);
+    const result = await response.json();
+    
+    if (result.success) {
+      const tbody = document.querySelector('#table-recent-orders tbody');
+      tbody.innerHTML = result.data.map(order => `
+        <tr>
+          <td><strong>${order.id}</strong></td>
+          <td>${order.customer_nama}</td>
+          <td>${order.titik_a} → ${order.titik_b}</td>
+          <td>${getStatusBadge(order.status)}</td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="openUpdateStatus('${order.id}', '${order.status}')">Update</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+  } catch (error) {
+    console.error('Error loading recent orders:', error);
+  }
+}
+
+// ========== ORDERS ==========
+async function loadOrders(status = '') {
+  try {
+    let url = `${API_URL}/orders`;
+    if (status) url += `?status=${status}`;
+    
+    const response = await fetch(url);
+    const result = await response.json();
+    
+    if (result.success) {
+      currentOrders = result.data;
+      renderOrdersTable(currentOrders);
+    }
+  } catch (error) {
+    console.error('Error loading orders:', error);
+  }
+}
+
+function renderOrdersTable(orders) {
+  const tbody = document.querySelector('#table-orders tbody');
+  if (orders.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Tidak ada order</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = orders.map(order => `
+    <tr>
+      <td><strong>${order.id}</strong></td>
+      <td>${formatDate(order.tanggal)}</td>
+      <td>${order.customer_nama}</td>
+      <td>${order.titik_a} → ${order.titik_b}</td>
+      <td>${order.driver_nama || '-'}</td>
+      <td>${getStatusBadge(order.status)}</td>
+      <td>
+        ${order.status_tagihan === 'LUNAS' 
+          ? '<span class="badge badge-lunas">LUNAS</span>' 
+          : '<span class="badge badge-belum">BELUM</span>'}
+      </td>
+      <td>
+        <button class="btn btn-secondary btn-sm" onclick="openUpdateStatus('${order.id}', '${order.status}')">Update</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterOrders(status) {
+  document.querySelectorAll('.filter-tag').forEach(el => el.classList.remove('active'));
+  event.target.classList.add('active');
+  loadOrders(status);
+}
+
+function searchOrders() {
+  const query = document.getElementById('search-orders').value.toLowerCase();
+  const filtered = currentOrders.filter(o => 
+    o.id.toLowerCase().includes(query) ||
+    o.customer_nama.toLowerCase().includes(query) ||
+    (o.driver_nama && o.driver_nama.toLowerCase().includes(query))
+  );
+  renderOrdersTable(filtered);
+}
+
+async function loadDriverOptions() {
+  try {
+    const response = await fetch(`${API_URL}/drivers/available/list`);
+    const result = await response.json();
+    
+    const select = document.getElementById('order-driver');
+    select.innerHTML = '<option value="">Pilih Driver</option>' + 
+      result.data.map(d => `<option value="${d.id}" data-nama="${d.nama}">${d.nama} (${d.nopol_truck || '-'})</option>`).join('');
+  } catch (error) {
+    console.error('Error loading drivers:', error);
+  }
+}
+
+async function loadCustomerOptions() {
+  try {
+    const response = await fetch(`${API_URL}/customers`);
+    const result = await response.json();
+    
+    const select = document.getElementById('order-customer');
+    select.innerHTML = '<option value="">Pilih Customer</option>' + 
+      result.data.map(c => `<option value="${c.id}" data-nama="${c.nama}">${c.nama}</option>`).join('');
+  } catch (error) {
+    console.error('Error loading customers:', error);
+  }
+}
+
+function calculateUangJalan() {
+  const jarak = parseFloat(document.getElementById('uj-jarak').value) || 0;
+  const konsumsi = parseFloat(document.getElementById('uj-konsumsi').value) || 5;
+  const harga = parseFloat(document.getElementById('uj-harga').value) || 10000;
+  const tol = parseFloat(document.getElementById('uj-tol').value) || 0;
+  const makan = parseFloat(document.getElementById('uj-makan').value) || 0;
+  
+  const bbmNeeded = jarak / konsumsi;
+  const totalBbm = bbmNeeded * harga;
+  const total = totalBbm + tol + makan;
+  
+  document.getElementById('uj-total').value = formatRupiah(total);
+  return total;
+}
+
+async function submitOrder() {
+  const data = {
+    id: document.getElementById('order-id').value,
+    customer_id: document.getElementById('order-customer').value,
+    customer_nama: document.getElementById('order-customer').options[document.getElementById('order-customer').selectedIndex].dataset.nama,
+    titik_a: document.getElementById('order-titik-a').value,
+    titik_b: document.getElementById('order-titik-b').value,
+    jenis_barang: document.getElementById('order-barang').value,
+    driver_id: document.getElementById('order-driver').value || null,
+    driver_nama: document.getElementById('order-driver').value ? document.getElementById('order-driver').options[document.getElementById('order-driver').selectedIndex].dataset.nama : null,
+    jarak_km: parseFloat(document.getElementById('uj-jarak').value) || 0,
+    konsumsi_bbm: parseFloat(document.getElementById('uj-konsumsi').value) || 5,
+    harga_bbm: parseFloat(document.getElementById('uj-harga').value) || 10000,
+    biaya_tol: parseFloat(document.getElementById('uj-tol').value) || 0,
+    biaya_makan: parseFloat(document.getElementById('uj-makan').value) || 0,
+    nilai_tagihan: parseFloat(document.getElementById('order-tagihan').value) || 0
+  };
+  
+  if (!data.id || !data.customer_nama || !data.titik_a || !data.titik_b) {
+    alert('Mohon lengkapi data yang wajib diisi (*)');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_URL}/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    
+    const result = await response.json();
+    if (result.success) {
+      alert('Order berhasil dibuat!');
+      closeModal('modal-add-order');
+      loadOrders();
+      loadDashboardStats();
+    } else {
+      alert(result.error || 'Gagal membuat order');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan');
+  }
+}
+
+function openUpdateStatus(orderId, currentStatus) {
+  document.getElementById('status-order-id').value = orderId;
+  document.getElementById('new-status').value = currentStatus;
+  openModal('modal-update-status');
+}
+
+async function submitStatusUpdate() {
+  const orderId = document.getElementById('status-order-id').value;
+  const status = document.getElementById('new-status').value;
+  const keterangan = document.getElementById('status-keterangan').value;
+  
+  try {
+    const response = await fetch(`${API_URL}/orders/${orderId}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, keterangan, updated_by: 'Admin' })
+    });
+    
+    const result = await response.json();
+    if (result.success) {
+      alert('Status berhasil diupdate!');
+      closeModal('modal-update-status');
+      loadOrders();
+      loadDashboardStats();
+    } else {
+      alert(result.error || 'Gagal update status');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan');
+  }
+}
+
+// ========== DRIVERS ==========
+async function loadDrivers() {
+  try {
+    const response = await fetch(`${API_URL}/drivers`);
+    const result = await response.json();
+    
+    if (result.success) {
+      currentDrivers = result.data;
+      const tbody = document.querySelector('#table-drivers tbody');
+      tbody.innerHTML = result.data.map(d => `
+        <tr>
+          <td><strong>${d.nama}</strong></td>
+          <td>${d.telepon || '-'}</td>
+          <td>${d.nopol_truck || '-'}</td>
+          <td>${d.armada || '-'}</td>
+          <td><span class="badge badge-${d.status === 'AKTIF' ? 'lunas' : 'belum'}">${d.status}</span></td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="deleteDriver(${d.id})">Hapus</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+  } catch (error) {
+    console.error('Error loading drivers:', error);
+  }
+}
+
+async function submitDriver() {
+  const data = {
+    nama: document.getElementById('driver-nama').value,
+    telepon: document.getElementById('driver-telepon').value,
+    nopol_truck: document.getElementById('driver-nopol').value,
+    armada: document.getElementById('driver-armada').value
+  };
+  
+  if (!data.nama) {
+    alert('Nama driver wajib diisi');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_URL}/drivers`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    
+    const result = await response.json();
+    if (result.success) {
+      alert('Driver berhasil ditambahkan!');
+      closeModal('modal-add-driver');
+      loadDrivers();
+    } else {
+      alert(result.error || 'Gagal menambahkan driver');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan');
+  }
+}
+
+async function deleteDriver(id) {
+  if (!confirm('Yakin ingin menghapus driver ini?')) return;
+  
+  try {
+    const response = await fetch(`${API_URL}/drivers/${id}`, { method: 'DELETE' });
+    const result = await response.json();
+    
+    if (result.success) {
+      alert('Driver berhasil dihapus');
+      loadDrivers();
+    } else {
+      alert(result.error || 'Gagal menghapus driver');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan');
+  }
+}
+
+// ========== CUSTOMERS ==========
+async function loadCustomers() {
+  try {
+    const response = await fetch(`${API_URL}/customers`);
+    const result = await response.json();
+    
+    if (result.success) {
+      currentCustomers = result.data;
+      const tbody = document.querySelector('#table-customers tbody');
+      tbody.innerHTML = result.data.map(c => `
+        <tr>
+          <td><strong>${c.nama}</strong></td>
+          <td>${c.telepon || '-'}</td>
+          <td>${c.alamat || '-'}</td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="deleteCustomer(${c.id})">Hapus</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+  } catch (error) {
+    console.error('Error loading customers:', error);
+  }
+}
+
+async function submitCustomer() {
+  const data = {
+    nama: document.getElementById('customer-nama').value,
+    telepon: document.getElementById('customer-telepon').value,
+    alamat: document.getElementById('customer-alamat').value,
+    email: document.getElementById('customer-email').value
+  };
+  
+  if (!data.nama) {
+    alert('Nama customer wajib diisi');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_URL}/customers`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    
+    const result = await response.json();
+    if (result.success) {
+      alert('Customer berhasil ditambahkan!');
+      closeModal('modal-add-customer');
+      loadCustomers();
+    } else {
+      alert(result.error || 'Gagal menambahkan customer');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan');
+  }
+}
+
+async function deleteCustomer(id) {
+  if (!confirm('Yakin ingin menghapus customer ini?')) return;
+  
+  try {
+    const response = await fetch(`${API_URL}/customers/${id}`, { method: 'DELETE' });
+    const result = await response.json();
+    
+    if (result.success) {
+      alert('Customer berhasil dihapus');
+      loadCustomers();
+    } else {
+      alert(result.error || 'Gagal menghapus customer');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan');
+  }
+}
+
+// ========== BILLING ==========
+async function loadBilling() {
+  try {
+    // Load stats
+    const statsResponse = await fetch(`${API_URL}/billing/stats/summary`);
+    const statsResult = await statsResponse.json();
+    
+    if (statsResult.success) {
+      document.getElementById('billing-piutang').textContent = formatRupiah(statsResult.data.total_piutang);
+      document.getElementById('billing-lunas').textContent = formatRupiah(statsResult.data.total_terbayar);
+      document.getElementById('billing-belum-count').textContent = statsResult.data.belum_lunas || 0;
+    }
+    
+    // Load billing list
+    const response = await fetch(`${API_URL}/billing`);
+    const result = await response.json();
+    
+    if (result.success) {
+      currentBilling = result.data;
+      const tbody = document.querySelector('#table-billing tbody');
+      tbody.innerHTML = result.data.map(b => `
+        <tr>
+          <td><strong>${b.id}</strong></td>
+          <td>${formatDate(b.tanggal)}</td>
+          <td>${b.customer_nama}</td>
+          <td>${formatRupiah(b.nilai_tagihan)}</td>
+          <td>${b.status_tagihan === 'LUNAS' 
+            ? '<span class="badge badge-lunas">LUNAS</span>' 
+            : '<span class="badge badge-belum">BELUM</span>'}</td>
+          <td>
+            ${b.status_tagihan === 'BELUM' 
+              ? `<button class="btn btn-primary btn-sm" onclick="updateBillingStatus('${b.id}', 'LUNAS')">Tandai Lunas</button>`
+              : `<button class="btn btn-secondary btn-sm" onclick="updateBillingStatus('${b.id}', 'BELUM')">Batal Lunas</button>`
+            }
+          </td>
+        </tr>
+      `).join('');
+    }
+  } catch (error) {
+    console.error('Error loading billing:', error);
+  }
+}
+
+async function updateBillingStatus(id, status) {
+  try {
+    const response = await fetch(`${API_URL}/billing/${id}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+    
+    const result = await response.json();
+    if (result.success) {
+      alert(`Status tagihan diupdate ke ${status}`);
+      loadBilling();
+    } else {
+      alert(result.error || 'Gagal update status');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Terjadi kesalahan');
+  }
+}
+</script>
+</body>
+</html>

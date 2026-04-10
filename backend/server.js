@@ -119,14 +119,23 @@ app.get('/api', (req, res) => {
   });
 });
 
-// Serve static files (frontend) dalam production
-if (NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../')));
-  
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../tracking.html'));
-  });
-}
+// Serve static files (frontend) - selalu aktif
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve tracking_online.html sebagai default di root
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'tracking_online.html'));
+});
+
+// Redirect /admin ke admin.html
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+// Redirect /driver ke driver-form.html
+app.get('/driver', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'driver-form.html'));
+});
 
 // 404 handler
 app.use((req, res) => {
