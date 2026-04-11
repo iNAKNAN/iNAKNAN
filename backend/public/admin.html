@@ -924,11 +924,10 @@ tr:hover td {
 
 <script>
 // API Config
-// Untuk 2-service setup: ganti API_SERVICE_URL dengan URL service API Anda
-const API_SERVICE_URL = 'https://ihandpump-api.up.railway.app'; // ← GANTI INI
+// Local: pakai localhost, Production: pakai domain yang sama (1 service)
 const API_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:3000/api' 
-  : (API_SERVICE_URL + '/api');
+  : '/api';  // Same origin - no CORS needed
 
 // State
 let currentOrders = [];
