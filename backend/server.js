@@ -13,24 +13,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // CORS Configuration
+// Allow all origins in production/Railway
 const corsOptions = {
   origin: (origin, callback) => {
-    const allowedOrigins = process.env.CORS_ORIGIN 
-      ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
-      : ['http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000'];
-    
-    // Allow requests with no origin (mobile apps, curl, same-origin, etc.)
-    // Also allow Railway domains (*.railway.app) and any origin in production
-    if (!origin || 
-        allowedOrigins.includes(origin) || 
-        allowedOrigins.includes('*') ||
-        origin.includes('railway.app') ||
-        NODE_ENV === 'production') {
-      callback(null, true);
-    } else {
-      console.log(`CORS blocked origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
+    // Allow all origins - no restrictions
+    callback(null, true);
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
@@ -38,6 +25,12 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Log all requests for debugging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path} - Origin: ${req.headers.origin || 'no-origin'}`);
+  next();
+});
 
 // Request logging (development only)
 if (NODE_ENV === 'development') {
