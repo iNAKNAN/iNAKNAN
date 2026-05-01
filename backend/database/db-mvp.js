@@ -701,9 +701,11 @@ class DatabaseMVP {
 
     const billingStats = await this.getBillingStats();
 
-    const todayOrders = await this.get(`
-      SELECT COUNT(*) as count FROM orders WHERE date(tanggal) = date('now')
-    `);
+    // PostgreSQL vs SQLite date syntax
+    const todayDateSql = this.isPostgres
+      ? `SELECT COUNT(*) as count FROM orders WHERE tanggal::date = CURRENT_DATE`
+      : `SELECT COUNT(*) as count FROM orders WHERE date(tanggal) = date('now')`;
+    const todayOrders = await this.get(todayDateSql);
 
     const activeDrivers = await this.get(`
       SELECT COUNT(DISTINCT driver_id) as count 

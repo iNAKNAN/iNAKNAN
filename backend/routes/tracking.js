@@ -1,51 +1,99 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../database/db');
+const dbMVP = require('../database/db-mvp');
 
-// GET /api/track/:resi - Track shipment by resi number
+// GET /api/track/:resi - Track shipment by resi number (legacy + MVP)
 router.get('/:resi', async (req, res) => {
   try {
     const { resi } = req.params;
-    const shipment = await db.getShipment(resi.toUpperCase());
+    const resiUpper = resi.toUpperCase();
 
-    if (!shipment) {
-      return res.status(404).json({
-        success: false,
-        error: 'Resi tidak ditemukan',
-        message: 'Pastikan nomor resi benar atau hubungi admin'
+    // 1. Coba cari di shipments (legacy)
+    let shipment = await db.getShipment(resiUpper);
+
+    if (shipment) {
+      return res.json({
+        success: true,
+        data: {
+          id: shipment.id,
+          pengirim: shipment.pengirim,
+          wa: shipment.wa,
+          barang: shipment.barang,
+          asal: shipment.asal,
+          tujuan: shipment.tujuan,
+          armada: shipment.armada,
+          nopol: shipment.nopol,
+          driver: shipment.driver,
+          status: shipment.status,
+          lokasi: shipment.lokasi,
+          lat: shipment.lat,
+          lng: shipment.lng,
+          progress: shipment.progress,
+          eta: shipment.eta,
+          history: shipment.history.map(h => ({
+            label: h.label,
+            time: h.time,
+            done: h.done === 1,
+            active: h.active === 1
+          })),
+          updated_at: shipment.updated_at
+        }
       });
     }
 
-    // Transform data untuk frontend
-    const response = {
-      success: true,
-      data: {
-        id: shipment.id,
-        pengirim: shipment.pengirim,
-        wa: shipment.wa,
-        barang: shipment.barang,
-        asal: shipment.asal,
-        tujuan: shipment.tujuan,
-        armada: shipment.armada,
-        nopol: shipment.nopol,
-        driver: shipment.driver,
-        status: shipment.status,
-        lokasi: shipment.lokasi,
-        lat: shipment.lat,
-        lng: shipment.lng,
-        progress: shipment.progress,
-        eta: shipment.eta,
-        history: shipment.history.map(h => ({
-          label: h.label,
-          time: h.time,
-          done: h.done === 1,
-          active: h.active === 1
-        })),
-        updated_at: shipment.updated_at
-      }
-    };
+    // 2. Coba cari di orders (MVP)
+    const order = await dbMVP.getOrder(resiUpper);
 
-    res.json(response);
+    if (order) {
+      // Map order status ke shipment progress
+      const statusProgressMap = {
+        'MENUNGGU': { progress: 0, eta: 'Belum dijadwalkan' },
+        'DIJADWALKAN': { progress: 10, eta: 'Menunggu muat' },
+        'MUAT': { progress: 25, eta: 'Sedang muat barang' },
+        'JALAN': { progress: 50, eta: 'Dalam perjalanan' },
+        'BONGKAR': { progress: 80, eta: 'Sedang bongkar' },
+        'SELESAI': { progress: 100, eta: 'Pengiriman selesai' }
+      };
+
+      const sp = statusProgressMap[order.status] || { progress: 0, eta: '-' };
+
+      return res.json({
+        success: true,
+        data: {
+          id: order.id,
+          pengirim: order.customer_nama,
+          wa: null,
+          barang: order.jenis_barang || '-',
+          asal: order.titik_a,
+          tujuan: order.titik_b,
+          armada: null,
+          nopol: null,
+          driver: order.driver_nama || '-',
+          status: order.status.toLowerCase(),
+          lokasi: order.lokasi_terakhir || order.titik_a,
+          lat: order.lat || -7.2575,
+          lng: order.lng || 112.7521,
+          progress: sp.progress,
+          eta: sp.eta,
+          history: (order.history || []).map(h => ({
+            label: h.keterangan || h.status,
+            time: h.created_at,
+            done: true,
+            active: false
+          })),
+          updated_at: order.updated_at
+        }
+      });
+    }
+
+    // 3. Tidak ditemukan di mana pun
+    return res.status(404).json({
+      success: false,
+      error: 'Resi tidak ditemukan',
+      message: 'Pastikan nomor resi benar atau hubungi admin'
+    });
+
   } catch (error) {
     console.error('Error tracking shipment:', error);
     res.status(500).json({
