@@ -72,6 +72,8 @@ router.get('/:resi', async (req, res) => {
           driver: order.driver_nama || '-',
           status: order.status.toLowerCase(),
           lokasi: order.lokasi_terakhir || order.titik_a,
+          lat_a: order.lat_a || -7.2575,
+          lng_a: order.lng_a || 112.7521,
           lat: order.lat || -7.2575,
           lng: order.lng || 112.7521,
           progress: sp.progress,

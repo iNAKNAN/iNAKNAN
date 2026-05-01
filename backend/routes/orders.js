@@ -165,6 +165,8 @@ router.post('/', async (req, res) => {
       biaya_tol: biaya_tol || 0,
       biaya_makan: biaya_makan || 0,
       nilai_tagihan: nilai_tagihan || 0,
+      lat_a: req.body.lat_a,
+      lng_a: req.body.lng_a,
       lat: req.body.lat,
       lng: req.body.lng
     });
