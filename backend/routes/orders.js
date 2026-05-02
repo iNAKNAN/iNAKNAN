@@ -84,6 +84,23 @@ router.get('/stats/dashboard', async (req, res) => {
   }
 });
 
+// GET /api/orders/available-periods - Get list of months/years that have data
+router.get('/available-periods', async (req, res) => {
+  try {
+    const periods = await db.getAvailablePeriods();
+    res.json({
+      success: true,
+      data: periods
+    });
+  } catch (error) {
+    console.error('Error fetching periods:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Gagal mengambil periode'
+    });
+  }
+});
+
 // GET /api/orders/recent/list - Get recent orders
 router.get('/recent/list', async (req, res) => {
   try {

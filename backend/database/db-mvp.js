@@ -760,6 +760,28 @@ class DatabaseMVP {
     };
   }
 
+  async getAvailablePeriods() {
+    if (this.isPostgres) {
+      return await this.query(`
+        SELECT 
+          EXTRACT(MONTH FROM tanggal)::int as month,
+          EXTRACT(YEAR FROM tanggal)::int as year
+        FROM orders
+        GROUP BY EXTRACT(MONTH FROM tanggal), EXTRACT(YEAR FROM tanggal)
+        ORDER BY year DESC, month DESC
+      `);
+    } else {
+      return await this.query(`
+        SELECT 
+          CAST(strftime('%m', tanggal) AS INTEGER) as month,
+          CAST(strftime('%Y', tanggal) AS INTEGER) as year
+        FROM orders
+        GROUP BY strftime('%m', tanggal), strftime('%Y', tanggal)
+        ORDER BY year DESC, month DESC
+      `);
+    }
+  }
+
   async getRecentOrders(limit = 10) {
     return await this.query(`
       SELECT o.*, c.nama as customer_nama_display
