@@ -296,4 +296,13 @@ class AppProvider extends ChangeNotifier {
       _setLoading(false);
     }
   }
+
+  Future<List<dynamic>> loadActiveOrdersForDriver() async {
+    try {
+      return await _api.getActiveOrdersForDriver();
+    } catch (e) {
+      _setError(e.toString());
+      rethrow;
+    }
+  }
 }

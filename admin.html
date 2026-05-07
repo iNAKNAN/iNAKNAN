@@ -890,6 +890,22 @@ tr:hover td {
   </div>
 </div>
 
+<!-- Modal: Order Detail -->
+<div class="modal-overlay" id="modal-order-detail">
+  <div class="modal" style="max-width: 720px;">
+    <div class="modal-header">
+      <span class="modal-title">📋 Detail Order</span>
+      <button class="modal-close" onclick="closeModal('modal-order-detail')">&times;</button>
+    </div>
+    <div class="modal-body" id="order-detail-body">
+      <div class="loading">Memuat data...</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-order-detail')">Tutup</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: Update Status -->
 <div class="modal-overlay" id="modal-update-status">
   <div class="modal" style="max-width: 400px;">
@@ -1021,7 +1037,8 @@ async function loadRecentOrders() {
           <td>${order.titik_a} → ${order.titik_b}</td>
           <td>${getStatusBadge(order.status)}</td>
           <td>
-            <button class="btn btn-secondary btn-sm" onclick="openUpdateStatus('${order.id}', '${order.status}')">Update</button>
+            <button class="btn btn-secondary btn-sm" onclick="openOrderDetail('${order.id}')">Detail</button>
+            <button class="btn btn-primary btn-sm" onclick="openUpdateStatus('${order.id}', '${order.status}')">Update</button>
           </td>
         </tr>
       `).join('');
@@ -1070,7 +1087,8 @@ function renderOrdersTable(orders) {
           : '<span class="badge badge-belum">BELUM</span>'}
       </td>
       <td>
-        <button class="btn btn-secondary btn-sm" onclick="openUpdateStatus('${order.id}', '${order.status}')">Update</button>
+        <button class="btn btn-secondary btn-sm" onclick="openOrderDetail('${order.id}')">Detail</button>
+        <button class="btn btn-primary btn-sm" onclick="openUpdateStatus('${order.id}', '${order.status}')">Update</button>
       </td>
     </tr>
   `).join('');
@@ -1410,6 +1428,127 @@ async function loadBilling() {
   } catch (error) {
     console.error('Error loading billing:', error);
   }
+}
+
+// ========== ORDER DETAIL ==========
+async function openOrderDetail(orderId) {
+  openModal('modal-order-detail');
+  const body = document.getElementById('order-detail-body');
+  body.innerHTML = '<div class="loading">Memuat data...</div>';
+  
+  try {
+    const response = await fetch(`${API_URL}/orders/${orderId}`);
+    const result = await response.json();
+    
+    if (result.success) {
+      const order = result.data;
+      const logs = order.driverLogs || [];
+      const history = order.history || [];
+      
+      body.innerHTML = `
+        <div style="margin-bottom: 1.5rem;">
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">No Order</label>
+              <div style="font-weight: 600; font-size: 1rem;">${order.id}</div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Status</label>
+              <div>${getStatusBadge(order.status)}</div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Customer</label>
+              <div>${order.customer_nama || '-'}</div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Telepon Customer</label>
+              <div>${order.customer_telepon || '-'}</div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Rute</label>
+              <div>${order.titik_a || '-'} → ${order.titik_b || '-'}</div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Jenis Barang</label>
+              <div>${order.jenis_barang || '-'}</div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Driver</label>
+              <div>${order.driver_nama || '-'}</div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">No Polisi</label>
+              <div>${order.nopol_truck || '-'}</div>
+            </div>
+          </div>
+          <hr style="border: none; border-top: 1px solid var(--border); margin: 1rem 0;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Nilai Tagihan</label>
+              <div style="font-weight: 600; color: var(--primary);">${formatRupiah(order.nilai_tagihan)}</div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Total Uang Jalan</label>
+              <div style="font-weight: 600; color: var(--blue);">${formatRupiah(order.total_uang_jalan)}</div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Tanggal Order</label>
+              <div>${formatDate(order.tanggal)}</div>
+            </div>
+          </div>
+        </div>
+        
+        ${logs.length > 0 ? `
+        <div style="margin-bottom: 1.5rem;">
+          <h4 style="font-size: 0.9rem; color: var(--muted); margin-bottom: 0.75rem;">📸 Update dari Sopir</h4>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            ${logs.map(log => `
+              <div style="background: var(--black); border: 1px solid var(--border); border-radius: 10px; padding: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    ${getStatusBadge(log.status_update)}
+                    <span style="font-weight: 600;">${log.driver_nama}</span>
+                  </div>
+                  <span style="font-size: 0.75rem; color: var(--muted);">${formatDateTime(log.created_at)}</span>
+                </div>
+                ${log.catatan ? `<div style="font-size: 0.85rem; color: var(--white); margin-bottom: 0.5rem;">💬 ${log.catatan}</div>` : ''}
+                ${log.foto_url ? `<div style="margin-top: 0.5rem;"><img src="${log.foto_url}" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer;" onclick="window.open('${log.foto_url}', '_blank')"></div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        ` : ''}
+        
+        ${history.length > 0 ? `
+        <div>
+          <h4 style="font-size: 0.9rem; color: var(--muted); margin-bottom: 0.75rem;">📝 Riwayat Status (Admin)</h4>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            ${history.map(h => `
+              <div style="display: flex; justify-content: space-between; align-items: center; background: var(--black); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  ${getStatusBadge(h.status)}
+                  ${h.keterangan ? `<span style="font-size: 0.8rem; color: var(--muted);">- ${h.keterangan}</span>` : ''}
+                </div>
+                <span style="font-size: 0.75rem; color: var(--muted);">${formatDateTime(h.created_at)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        ` : ''}
+      `;
+    } else {
+      body.innerHTML = '<div class="empty-state">Gagal memuat detail order</div>';
+    }
+  } catch (error) {
+    console.error('Error loading order detail:', error);
+    body.innerHTML = '<div class="empty-state">Terjadi kesalahan saat memuat data</div>';
+  }
+}
+
+function formatDateTime(dateString) {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
+  return date.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 async function updateBillingStatus(id, status) {

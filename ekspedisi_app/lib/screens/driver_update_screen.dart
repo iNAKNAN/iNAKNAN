@@ -6,19 +6,26 @@ import '../providers/app_provider.dart';
 import '../theme/app_theme.dart';
 
 class DriverUpdateScreen extends StatefulWidget {
-  const DriverUpdateScreen({super.key});
+  final String? prefilledOrderId;
+
+  const DriverUpdateScreen({super.key, this.prefilledOrderId});
 
   @override
   State<DriverUpdateScreen> createState() => _DriverUpdateScreenState();
 }
 
 class _DriverUpdateScreenState extends State<DriverUpdateScreen> {
-  final _orderIdCtrl = TextEditingController();
   final _driverNameCtrl = TextEditingController();
   final _catatanCtrl = TextEditingController();
   String _selectedStatus = 'MUAT';
   File? _selectedImage;
   bool _submitted = false;
+
+  List<dynamic> _activeOrders = [];
+  String? _selectedOrderId;
+  bool _useManualInput = false;
+  bool _isLoadingOrders = true;
+  String? _ordersError;
 
   final List<Map<String, dynamic>> _statusOptions = [
     {'value': 'MUAT', 'label': 'MUAT BARANG', 'icon': Icons.inventory_2},
@@ -26,6 +33,46 @@ class _DriverUpdateScreenState extends State<DriverUpdateScreen> {
     {'value': 'SAMPAI', 'label': 'SAMPAI TUJUAN', 'icon': Icons.location_on},
     {'value': 'BONGKAR', 'label': 'BONGKAR SELESAI', 'icon': Icons.check_circle},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadActiveOrders();
+  }
+
+  Future<void> _loadActiveOrders() async {
+    try {
+      final orders = await context.read<AppProvider>().loadActiveOrdersForDriver();
+      if (mounted) {
+        setState(() {
+          _activeOrders = orders;
+          _isLoadingOrders = false;
+          if (widget.prefilledOrderId != null) {
+            _selectedOrderId = widget.prefilledOrderId!.toUpperCase();
+            _autoFillDriverName();
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingOrders = false;
+          _ordersError = e.toString();
+          _useManualInput = true;
+        });
+      }
+    }
+  }
+
+  void _autoFillDriverName() {
+    final order = _activeOrders.firstWhere(
+      (o) => o['id'] == _selectedOrderId,
+      orElse: () => null,
+    );
+    if (order != null && order['driver_nama'] != null && order['driver_nama'].toString().isNotEmpty) {
+      _driverNameCtrl.text = order['driver_nama'].toString();
+    }
+  }
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -36,7 +83,11 @@ class _DriverUpdateScreenState extends State<DriverUpdateScreen> {
   }
 
   Future<void> _submit() async {
-    if (_orderIdCtrl.text.isEmpty || _driverNameCtrl.text.isEmpty) {
+    final orderId = _useManualInput
+        ? _selectedOrderId ?? ''
+        : (_selectedOrderId ?? '');
+
+    if (orderId.isEmpty || _driverNameCtrl.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Mohon lengkapi data yang wajib diisi')),
       );
@@ -46,12 +97,10 @@ class _DriverUpdateScreenState extends State<DriverUpdateScreen> {
     setState(() => _submitted = true);
 
     try {
-      // Untuk MVP, kita kirim base64 string kosong jika ada foto
-      // (Backend perlu dimodifikasi untuk handle multipart upload)
       String fotoUrl = '';
 
       await context.read<AppProvider>().submitDriverLog({
-        'order_id': _orderIdCtrl.text.toUpperCase(),
+        'order_id': orderId.toUpperCase(),
         'driver_nama': _driverNameCtrl.text,
         'status_update': _selectedStatus,
         'foto_url': fotoUrl,
@@ -76,13 +125,87 @@ class _DriverUpdateScreenState extends State<DriverUpdateScreen> {
   }
 
   void _resetForm() {
-    _orderIdCtrl.clear();
     _driverNameCtrl.clear();
     _catatanCtrl.clear();
     setState(() {
+      _selectedOrderId = null;
       _selectedStatus = 'MUAT';
       _selectedImage = null;
     });
+  }
+
+  Widget _buildOrderField() {
+    if (_isLoadingOrders) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          children: [
+            SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primary)),
+            SizedBox(width: 12),
+            Text('Memuat daftar order aktif...', style: TextStyle(color: AppTheme.muted, fontSize: 13)),
+          ],
+        ),
+      );
+    }
+
+    if (_useManualInput) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: TextEditingController(text: _selectedOrderId)..selection = TextSelection.collapsed(offset: _selectedOrderId?.length ?? 0),
+            textCapitalization: TextCapitalization.characters,
+            decoration: InputDecoration(
+              labelText: 'Nomor Order *',
+              helperText: _ordersError != null ? 'Gagal memuat data. Ketik manual.' : 'Belum ada order aktif. Ketik manual.',
+              helperStyle: const TextStyle(color: AppTheme.yellow, fontSize: 12),
+            ),
+            onChanged: (val) => _selectedOrderId = val,
+          ),
+          if (_activeOrders.isNotEmpty)
+            TextButton(
+              onPressed: () => setState(() => _useManualInput = false),
+              child: const Text('Kembali ke pilihan dropdown'),
+            ),
+        ],
+      );
+    }
+
+    if (_activeOrders.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            textCapitalization: TextCapitalization.characters,
+            decoration: const InputDecoration(
+              labelText: 'Nomor Order *',
+              helperText: 'Belum ada order aktif. Ketik manual.',
+              helperStyle: TextStyle(color: AppTheme.yellow, fontSize: 12),
+            ),
+            onChanged: (val) => _selectedOrderId = val,
+          ),
+        ],
+      );
+    }
+
+    return DropdownButtonFormField<String>(
+      decoration: const InputDecoration(labelText: 'Nomor Order *'),
+      value: _selectedOrderId,
+      isExpanded: true,
+      items: _activeOrders.map<DropdownMenuItem<String>>((order) {
+        final label = '${order['id']} — ${order['titik_a']} → ${order['titik_b']} (${order['status']})';
+        return DropdownMenuItem<String>(
+          value: order['id'] as String,
+          child: Text(label, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
+        );
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          _selectedOrderId = value;
+          _autoFillDriverName();
+        });
+      },
+    );
   }
 
   @override
@@ -128,11 +251,7 @@ class _DriverUpdateScreenState extends State<DriverUpdateScreen> {
                     Text('Form Update', style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 16),
 
-                    TextField(
-                      controller: _orderIdCtrl,
-                      textCapitalization: TextCapitalization.characters,
-                      decoration: const InputDecoration(labelText: 'Nomor Order *'),
-                    ),
+                    _buildOrderField(),
                     const SizedBox(height: 12),
 
                     TextField(

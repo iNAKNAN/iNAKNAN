@@ -465,7 +465,10 @@ body {
         <!-- No Order -->
         <div class="form-group">
           <label class="form-label">Nomor Order <span>*</span></label>
-          <input type="text" class="form-input" id="order-id" placeholder="Contoh: ORD-001" required>
+          <select class="form-select" id="order-id" required onchange="onOrderSelected(this)">
+            <option value="">Memuat data order...</option>
+          </select>
+          <div id="order-loading" style="font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem;">Memuat daftar order aktif...</div>
         </div>
 
         <!-- Driver Name -->
@@ -569,17 +572,90 @@ const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:300
 // State
 let uploadedFiles = [];
 
+// Active orders cache
+let activeOrders = [];
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
   loadRecentHistory();
+  loadActiveOrders();
+});
+
+// Load active orders for dropdown
+async function loadActiveOrders() {
+  const select = document.getElementById('order-id');
+  const loading = document.getElementById('order-loading');
+  
+  try {
+    const response = await fetch(`${API_URL}/orders/active-for-driver`);
+    const result = await response.json();
+    
+    if (result.success && result.data.length > 0) {
+      activeOrders = result.data;
+      
+      // Build options
+      let options = '<option value="">Pilih Nomor Order</option>';
+      result.data.forEach(order => {
+        const label = `${order.id} — ${order.titik_a} → ${order.titik_b} (${order.status})`;
+        options += `<option value="${order.id}" data-driver="${order.driver_nama || ''}">${label}</option>`;
+      });
+      
+      select.innerHTML = options;
+      if (loading) loading.style.display = 'none';
+      
+      // Pre-fill from URL params if available
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderId = urlParams.get('order');
+      if (orderId) {
+        select.value = orderId.toUpperCase();
+        onOrderSelected(select);
+      }
+    } else {
+      fallbackToManualInput('Belum ada order aktif');
+    }
+  } catch (error) {
+    console.error('Error loading active orders:', error);
+    fallbackToManualInput('Gagal memuat data order');
+  }
+}
+
+// Fallback to manual text input if API fails
+function fallbackToManualInput(reason) {
+  const select = document.getElementById('order-id');
+  const loading = document.getElementById('order-loading');
+  
+  // Replace select with input
+  const parent = select.parentElement;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'form-input';
+  input.id = 'order-id';
+  input.placeholder = 'Contoh: ORD-001';
+  input.required = true;
+  
+  parent.replaceChild(input, select);
+  if (loading) {
+    loading.textContent = reason + '. Silakan ketik manual.';
+    loading.style.color = 'var(--yellow)';
+  }
   
   // Pre-fill from URL params if available
   const urlParams = new URLSearchParams(window.location.search);
   const orderId = urlParams.get('order');
   if (orderId) {
-    document.getElementById('order-id').value = orderId;
+    input.value = orderId.toUpperCase();
   }
-});
+}
+
+// Handle order selection
+function onOrderSelected(select) {
+  const driverInput = document.getElementById('driver-name');
+  const selectedOption = select.options[select.selectedIndex];
+  
+  if (selectedOption && selectedOption.dataset.driver) {
+    driverInput.value = selectedOption.dataset.driver;
+  }
+}
 
 // Preview uploaded files
 function previewFiles(input) {

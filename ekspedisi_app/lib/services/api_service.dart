@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../models/order.dart';
 import '../models/customer.dart';
@@ -26,6 +25,19 @@ class ApiService {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       };
+
+  String _parseError(http.Response response) {
+    try {
+      final data = jsonDecode(response.body);
+      if (data is Map && data.containsKey('error')) {
+        return data['error'].toString();
+      }
+    } catch (_) {}
+    final bodyPreview = response.body.length > 200
+        ? '${response.body.substring(0, 200)}...'
+        : response.body;
+    return 'HTTP ${response.statusCode}: $bodyPreview';
+  }
 
   // ==================== HEALTH ====================
   Future<bool> checkHealth() async {
@@ -55,7 +67,7 @@ class ApiService {
         return orders.map((e) => Order.fromJson(e)).toList();
       }
     }
-    throw Exception('Gagal mengambil data orders');
+    throw Exception(_parseError(response));
   }
 
   Future<Order> getOrder(String id) async {
@@ -67,7 +79,7 @@ class ApiService {
         return Order.fromJson(data['data']);
       }
     }
-    throw Exception('Order tidak ditemukan');
+    throw Exception(_parseError(response));
   }
 
   Future<Order> createOrder(Map<String, dynamic> orderData) async {
@@ -75,7 +87,7 @@ class ApiService {
       Uri.parse('$baseUrl/orders'),
       headers: headers,
       body: jsonEncode(orderData),
-    );
+    ).timeout(const Duration(seconds: 15));
 
     if (response.statusCode == 201) {
       final data = jsonDecode(response.body);
@@ -83,7 +95,7 @@ class ApiService {
         return Order.fromJson(data['data']);
       }
     }
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal membuat order');
+    throw Exception(_parseError(response));
   }
 
   Future<Order> updateOrder(String id, Map<String, dynamic> orderData) async {
@@ -91,7 +103,7 @@ class ApiService {
       Uri.parse('$baseUrl/orders/$id'),
       headers: headers,
       body: jsonEncode(orderData),
-    );
+    ).timeout(const Duration(seconds: 15));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -99,14 +111,14 @@ class ApiService {
         return Order.fromJson(data['data']);
       }
     }
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal update order');
+    throw Exception(_parseError(response));
   }
 
   Future<void> deleteOrder(String id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/orders/$id'), headers: headers);
+    final response = await http.delete(Uri.parse('$baseUrl/orders/$id'), headers: headers).timeout(const Duration(seconds: 15));
 
     if (response.statusCode != 200) {
-      throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal menghapus order');
+      throw Exception(_parseError(response));
     }
   }
 
@@ -126,7 +138,7 @@ class ApiService {
         return Order.fromJson(data['data']);
       }
     }
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal update status');
+    throw Exception(_parseError(response));
   }
 
   Future<Order> assignDriver(String id, int driverId, String driverNama) async {
@@ -145,7 +157,7 @@ class ApiService {
         return Order.fromJson(data['data']);
       }
     }
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal assign driver');
+    throw Exception(_parseError(response));
   }
 
   // ==================== CUSTOMERS ====================
@@ -159,7 +171,7 @@ class ApiService {
         return customers.map((e) => Customer.fromJson(e)).toList();
       }
     }
-    throw Exception('Gagal mengambil data customers');
+    throw Exception(_parseError(response));
   }
 
   Future<Customer> createCustomer(Map<String, dynamic> customerData) async {
@@ -175,7 +187,7 @@ class ApiService {
         return Customer.fromJson(data['data']);
       }
     }
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal membuat customer');
+    throw Exception(_parseError(response));
   }
 
   Future<Customer> updateCustomer(int id, Map<String, dynamic> customerData) async {
@@ -191,14 +203,14 @@ class ApiService {
         return Customer.fromJson(data['data']);
       }
     }
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal update customer');
+    throw Exception(_parseError(response));
   }
 
   Future<void> deleteCustomer(int id) async {
     final response = await http.delete(Uri.parse('$baseUrl/customers/$id'), headers: headers);
 
     if (response.statusCode != 200) {
-      throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal menghapus customer');
+      throw Exception(_parseError(response));
     }
   }
 
@@ -217,7 +229,7 @@ class ApiService {
         return drivers.map((e) => Driver.fromJson(e)).toList();
       }
     }
-    throw Exception('Gagal mengambil data drivers');
+    throw Exception(_parseError(response));
   }
 
   Future<List<Driver>> getAvailableDrivers() async {
@@ -230,7 +242,7 @@ class ApiService {
         return drivers.map((e) => Driver.fromJson(e)).toList();
       }
     }
-    throw Exception('Gagal mengambil data drivers tersedia');
+    throw Exception(_parseError(response));
   }
 
   Future<Driver> createDriver(Map<String, dynamic> driverData) async {
@@ -246,7 +258,7 @@ class ApiService {
         return Driver.fromJson(data['data']);
       }
     }
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal membuat driver');
+    throw Exception(_parseError(response));
   }
 
   Future<Driver> updateDriver(int id, Map<String, dynamic> driverData) async {
@@ -262,14 +274,14 @@ class ApiService {
         return Driver.fromJson(data['data']);
       }
     }
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal update driver');
+    throw Exception(_parseError(response));
   }
 
   Future<void> deleteDriver(int id) async {
     final response = await http.delete(Uri.parse('$baseUrl/drivers/$id'), headers: headers);
 
     if (response.statusCode != 200) {
-      throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal menghapus driver');
+      throw Exception(_parseError(response));
     }
   }
 
@@ -281,7 +293,7 @@ class ApiService {
     );
 
     if (response.statusCode != 201) {
-      throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal mengirim log');
+      throw Exception(_parseError(response));
     }
   }
 
@@ -298,7 +310,19 @@ class ApiService {
         return data['data'] ?? [];
       }
     }
-    throw Exception('Gagal mengambil driver logs');
+    throw Exception(_parseError(response));
+  }
+
+  Future<List<dynamic>> getActiveOrdersForDriver() async {
+    final response = await http.get(Uri.parse('$baseUrl/orders/active-for-driver'), headers: headers);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['success'] == true) {
+        return data['data'] ?? [];
+      }
+    }
+    throw Exception(_parseError(response));
   }
 
   // ==================== TRACKING / SHIPMENTS ====================
@@ -311,7 +335,7 @@ class ApiService {
         return Shipment.fromJson(data['data']);
       }
     }
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Resi tidak ditemukan');
+    throw Exception(_parseError(response));
   }
 
   Future<PositionUpdate> getPosition(String resi) async {
@@ -323,7 +347,7 @@ class ApiService {
         return PositionUpdate.fromJson(data['data']);
       }
     }
-    throw Exception('Gagal mengambil posisi');
+    throw Exception(_parseError(response));
   }
 
   Future<List<Shipment>> getShipments() async {
@@ -336,7 +360,7 @@ class ApiService {
         return shipments.map((e) => Shipment.fromJson(e)).toList();
       }
     }
-    throw Exception('Gagal mengambil data shipments');
+    throw Exception(_parseError(response));
   }
 
   Future<void> createShipment(Map<String, dynamic> data) async {
@@ -347,7 +371,7 @@ class ApiService {
     );
 
     if (response.statusCode != 201) {
-      throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal membuat shipment');
+      throw Exception(_parseError(response));
     }
   }
 
@@ -359,7 +383,7 @@ class ApiService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal update shipment');
+      throw Exception(_parseError(response));
     }
   }
 
@@ -367,7 +391,7 @@ class ApiService {
     final response = await http.delete(Uri.parse('$baseUrl/shipments/$id'), headers: headers);
 
     if (response.statusCode != 200) {
-      throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal menghapus shipment');
+      throw Exception(_parseError(response));
     }
   }
 
@@ -379,7 +403,7 @@ class ApiService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal update posisi');
+      throw Exception(_parseError(response));
     }
   }
 
@@ -398,7 +422,7 @@ class ApiService {
         return orders.map((e) => Order.fromJson(e)).toList();
       }
     }
-    throw Exception('Gagal mengambil data billing');
+    throw Exception(_parseError(response));
   }
 
   Future<Order> updateBillingStatus(String id, String status) async {
@@ -414,7 +438,7 @@ class ApiService {
         return Order.fromJson(data['data']);
       }
     }
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal update status tagihan');
+    throw Exception(_parseError(response));
   }
 
   // ==================== DASHBOARD ====================
@@ -427,7 +451,7 @@ class ApiService {
         return DashboardStats.fromJson(data['data']);
       }
     }
-    throw Exception('Gagal mengambil statistik dashboard');
+    throw Exception(_parseError(response));
   }
 
   // ==================== UANG JALAN ====================
@@ -444,6 +468,6 @@ class ApiService {
         return data['data'] ?? {};
       }
     }
-    throw Exception(jsonDecode(response.body)['error'] ?? 'Gagal menghitung uang jalan');
+    throw Exception(_parseError(response));
   }
 }

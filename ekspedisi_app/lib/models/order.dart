@@ -3,6 +3,7 @@ class Order {
   final String? tanggal;
   final int? customerId;
   final String customerNama;
+  final String? customerTelepon;
   final String titikA;
   final String titikB;
   final String? jenisBarang;
@@ -20,6 +21,7 @@ class Order {
   final String? lokasiTerakhir;
   final double? lat;
   final double? lng;
+  final String? nopolTruck;
   final String? createdAt;
   final String? updatedAt;
   final List<OrderHistory>? history;
@@ -30,6 +32,7 @@ class Order {
     this.tanggal,
     this.customerId,
     required this.customerNama,
+    this.customerTelepon,
     required this.titikA,
     required this.titikB,
     this.jenisBarang,
@@ -47,6 +50,7 @@ class Order {
     this.lokasiTerakhir,
     this.lat,
     this.lng,
+    this.nopolTruck,
     this.createdAt,
     this.updatedAt,
     this.history,
@@ -59,6 +63,7 @@ class Order {
       tanggal: json['tanggal'],
       customerId: json['customer_id'],
       customerNama: json['customer_nama'] ?? json['customer_nama_display'] ?? '',
+      customerTelepon: json['customer_telepon'],
       titikA: json['titik_a'] ?? '',
       titikB: json['titik_b'] ?? '',
       jenisBarang: json['jenis_barang'],
@@ -76,6 +81,7 @@ class Order {
       lokasiTerakhir: json['lokasi_terakhir'],
       lat: json['lat'] != null ? (json['lat'] as num).toDouble() : null,
       lng: json['lng'] != null ? (json['lng'] as num).toDouble() : null,
+      nopolTruck: json['nopol_truck'] ?? json['nopol'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       history: json['history'] != null

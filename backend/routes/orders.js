@@ -47,6 +47,30 @@ router.get('/active-for-tracking', async (req, res) => {
   }
 });
 
+// GET /api/orders/active-for-driver - Get orders aktif untuk form sopir (belum selesai)
+router.get('/active-for-driver', async (req, res) => {
+  try {
+    const orders = await db.query(`
+      SELECT o.id, o.titik_a, o.titik_b, o.status, o.driver_nama, o.customer_nama
+      FROM orders o
+      WHERE o.status != 'SELESAI'
+      ORDER BY o.created_at DESC
+    `);
+    
+    res.json({
+      success: true,
+      count: orders.length,
+      data: orders
+    });
+  } catch (error) {
+    console.error('Error fetching active orders for driver:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Gagal mengambil data order aktif'
+    });
+  }
+});
+
 // GET /api/orders - List semua orders
 router.get('/', async (req, res) => {
   try {
