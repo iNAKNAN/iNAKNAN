@@ -265,6 +265,20 @@ class DatabaseMVP {
         )
       `);
 
+      // Fuel prices table
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS fuel_prices (
+          jenis VARCHAR(50) PRIMARY KEY,
+          nama VARCHAR(255) NOT NULL,
+          harga REAL DEFAULT 0,
+          satuan VARCHAR(20) DEFAULT 'liter',
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      // Seed fuel prices (always run, idempotent)
+      await this.seedFuelPricesPostgres(client);
+
       // Insert sample data
       await this.insertSampleDataPostgres(client);
 
@@ -321,6 +335,16 @@ class DatabaseMVP {
     `);
 
     console.log('✅ Sample MVP data inserted');
+  }
+
+  async seedFuelPricesPostgres(client) {
+    // Insert default fuel prices if not exists
+    await client.query(`
+      INSERT INTO fuel_prices (jenis, nama, harga, satuan) VALUES
+      ('BIOSOLAR', 'Pertamina Dex / Bio Solar', 6800, 'liter'),
+      ('SOLAR', 'Solar Industri', 7200, 'liter')
+      ON CONFLICT (jenis) DO NOTHING
+    `);
   }
 
   async initSQLiteTables() {

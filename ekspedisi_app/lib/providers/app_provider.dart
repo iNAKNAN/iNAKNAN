@@ -20,7 +20,10 @@ class AppProvider extends ChangeNotifier {
   List<Order> _billingOrders = [];
   DashboardStats? _dashboardStats;
   Shipment? _trackedShipment;
-  Map<String, dynamic> _fuelPrices = {};
+  Map<String, dynamic> _fuelPrices = {
+    'BIOSOLAR': {'jenis': 'BIOSOLAR', 'nama': 'Pertamina Dex / Bio Solar', 'harga': 6800, 'satuan': 'liter'},
+    'SOLAR': {'jenis': 'SOLAR', 'nama': 'Solar Industri', 'harga': 7200, 'satuan': 'liter'},
+  };
 
   // Getters
   bool get isLoading => _isLoading;
