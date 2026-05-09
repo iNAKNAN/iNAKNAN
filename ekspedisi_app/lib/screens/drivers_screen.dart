@@ -32,23 +32,27 @@ class _DriversScreenState extends State<DriversScreen> {
           if (provider.drivers.isEmpty) {
             return const Center(child: Text('Belum ada drivers', style: TextStyle(color: AppTheme.muted)));
           }
-          return ListView.builder(
-            itemCount: provider.drivers.length,
-            itemBuilder: (context, index) {
-              final d = provider.drivers[index];
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: d.isAvailable ? AppTheme.green : AppTheme.muted,
-                  child: const Icon(Icons.person, color: Colors.white),
-                ),
-                title: Text(d.nama),
-                subtitle: Text('${d.nopolTruck ?? '-'} • ${d.armada ?? '-'}', style: const TextStyle(color: AppTheme.muted)),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: AppTheme.red, size: 20),
-                  onPressed: () => _confirmDelete(d),
-                ),
-              );
-            },
+          return RefreshIndicator(
+            onRefresh: () => provider.loadDrivers(),
+            color: AppTheme.primary,
+            child: ListView.builder(
+              itemCount: provider.drivers.length,
+              itemBuilder: (context, index) {
+                final d = provider.drivers[index];
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: d.isAvailable ? AppTheme.green : AppTheme.muted,
+                    child: const Icon(Icons.person, color: Colors.white),
+                  ),
+                  title: Text(d.nama),
+                  subtitle: Text('${d.nopolTruck ?? '-'} • ${d.armada ?? '-'}', style: const TextStyle(color: AppTheme.muted)),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: AppTheme.red, size: 20),
+                    onPressed: () => _confirmDelete(d),
+                  ),
+                );
+              },
+            ),
           );
         },
       ),

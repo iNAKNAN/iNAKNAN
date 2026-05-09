@@ -32,20 +32,24 @@ class _CustomersScreenState extends State<CustomersScreen> {
           if (provider.customers.isEmpty) {
             return const Center(child: Text('Belum ada customers', style: TextStyle(color: AppTheme.muted)));
           }
-          return ListView.builder(
-            itemCount: provider.customers.length,
-            itemBuilder: (context, index) {
-              final c = provider.customers[index];
-              return ListTile(
-                leading: CircleAvatar(backgroundColor: AppTheme.primary, child: Text(c.nama[0])),
-                title: Text(c.nama),
-                subtitle: Text(c.telepon ?? '-', style: const TextStyle(color: AppTheme.muted)),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: AppTheme.red, size: 20),
-                  onPressed: () => _confirmDelete(c),
-                ),
-              );
-            },
+          return RefreshIndicator(
+            onRefresh: () => provider.loadCustomers(),
+            color: AppTheme.primary,
+            child: ListView.builder(
+              itemCount: provider.customers.length,
+              itemBuilder: (context, index) {
+                final c = provider.customers[index];
+                return ListTile(
+                  leading: CircleAvatar(backgroundColor: AppTheme.primary, child: Text(c.nama[0])),
+                  title: Text(c.nama),
+                  subtitle: Text(c.telepon ?? '-', style: const TextStyle(color: AppTheme.muted)),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: AppTheme.red, size: 20),
+                    onPressed: () => _confirmDelete(c),
+                  ),
+                );
+              },
+            ),
           );
         },
       ),

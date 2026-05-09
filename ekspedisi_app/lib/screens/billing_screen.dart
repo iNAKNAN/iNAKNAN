@@ -99,27 +99,31 @@ class _BillingScreenState extends State<BillingScreen> {
 
               // List
               Expanded(
-                child: ListView.builder(
-                  itemCount: provider.billingOrders.length,
-                  itemBuilder: (context, index) {
-                    final order = provider.billingOrders[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                      child: ListTile(
-                        title: Text(order.id),
-                        subtitle: Text(order.customerNama),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(formatRupiah(order.nilaiTagihan), style: const TextStyle(fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 12),
-                            StatusBadge(status: order.statusTagihan ?? 'BELUM'),
-                          ],
+                child: RefreshIndicator(
+                  onRefresh: () => provider.loadBilling(),
+                  color: AppTheme.primary,
+                  child: ListView.builder(
+                    itemCount: provider.billingOrders.length,
+                    itemBuilder: (context, index) {
+                      final order = provider.billingOrders[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                        child: ListTile(
+                          title: Text(order.id),
+                          subtitle: Text(order.customerNama),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(formatRupiah(order.nilaiTagihan), style: const TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(width: 12),
+                              StatusBadge(status: order.statusTagihan ?? 'BELUM'),
+                            ],
+                          ),
+                          onTap: () => _showUpdateDialog(order),
                         ),
-                        onTap: () => _showUpdateDialog(order),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
