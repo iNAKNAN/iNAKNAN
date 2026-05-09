@@ -2,6 +2,14 @@
 
 > **Aplikasi manajemen pengiriman & tracking real-time** untuk usaha ekspedisi. Tersedia dalam versi **Mobile App (Flutter)** dan **Dashboard Web** dengan backend REST API yang solid.
 
+<p align="center">
+  <a href="https://flutter.dev"><img src="https://img.shields.io/badge/Flutter-3.11+-02569B?style=flat&logo=flutter&logoColor=white" /></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node.js-14+-339933?style=flat&logo=node.js&logoColor=white" /></a>
+  <a href="https://www.sqlite.org"><img src="https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&logoColor=white" /></a>
+  <a href="https://github.com/guramaipedas-prog/iHandPump/releases/tag/v1.0.0"><img src="https://img.shields.io/badge/Release-v1.0.0-FF5A00?style=flat&logo=github" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat" /></a>
+</p>
+
 ---
 
 ## ✨ Fitur Utama
@@ -219,17 +227,80 @@ Klik thumbnail di bawah untuk menonton simulasi lengkap aplikasi TrukJatim (2 me
 
 ---
 
-## 📡 API Endpoints (Contoh)
+## 📡 API Documentation
 
-```
-GET    /api/shipments          → List semua pengiriman
-POST   /api/shipments          → Buat pengiriman baru
-GET    /api/shipments/:id      → Detail pengiriman
-PUT    /api/tracking/:id       → Update posisi tracking
-GET    /api/tracking/:id       → Riwayat tracking
+Base URL: `http://localhost:3000`
+
+### Shipments
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| `GET` | `/api/shipments` | List semua pengiriman |
+| `POST` | `/api/shipments` | Buat pengiriman baru |
+| `GET` | `/api/shipments/:id` | Detail pengiriman |
+
+#### Contoh: Buat Pengiriman Baru
+
+**Request:**
+```bash
+curl -X POST http://localhost:3000/api/shipments \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tracking_number": "ORD-005",
+    "sender_name": "PT Maju Jaya",
+    "origin": "Surabaya",
+    "destination": "Jakarta",
+    "driver_id": 1,
+    "status": "Menunggu"
+  }'
 ```
 
-*Dokumentasi lengkap API tersedia di folder `backend/README.md`*
+**Response:**
+```json
+{
+  "id": 5,
+  "tracking_number": "ORD-005",
+  "sender_name": "PT Maju Jaya",
+  "origin": "Surabaya",
+  "destination": "Jakarta",
+  "status": "Menunggu",
+  "created_at": "2026-05-09T10:00:00.000Z"
+}
+```
+
+### Tracking
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| `PUT` | `/api/tracking/:id` | Update posisi & status tracking |
+| `GET` | `/api/tracking/:id` | Riwayat tracking pengiriman |
+
+#### Contoh: Update Tracking
+
+**Request:**
+```bash
+curl -X PUT http://localhost:3000/api/tracking/5 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "Dalam Perjalanan",
+    "location": "Klaten",
+    "latitude": -7.7156,
+    "longitude": 110.6122
+  }'
+```
+
+**Response:**
+```json
+{
+  "message": "Tracking updated",
+  "tracking": {
+    "id": 5,
+    "status": "Dalam Perjalanan",
+    "location": "Klaten",
+    "updated_at": "2026-05-09T10:15:00.000Z"
+  }
+}
+```
 
 ---
 
