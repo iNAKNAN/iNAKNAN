@@ -139,7 +139,9 @@ flutter run
 
 | Platform | File |
 |----------|------|
-| Android | [`ekspedisi-app-release.apk`](./ekspedisi-app-release.apk) |
+| Android | [**Download APK**](https://github.com/guramaipedas-prog/iHandPump/releases/download/v1.0.0/ekspedisi-app-release.apk) |
+
+> **Note:** Untuk install, aktifkan **"Install from unknown sources"** di pengaturan Android.
 
 ---
 
