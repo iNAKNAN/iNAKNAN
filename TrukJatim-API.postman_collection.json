@@ -1,0 +1,475 @@
+{
+  "info": {
+    "_postman_id": "trukjatim-api-collection",
+    "name": "TrukJatim Ekspedisi API",
+    "description": "API Collection untuk TrukJatim - Sistem Otomasi Ekspedisi. Base URL: http://localhost:3000",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "📦 Orders",
+      "item": [
+        {
+          "name": "List Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/orders",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders"]
+            },
+            "description": "Mendapatkan semua data order pengiriman"
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/orders/ORD-001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "ORD-001"]
+            }
+          }
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"ORD-005\",\n  \"customer_id\": 1,\n  \"customer_nama\": \"PT Maju Jaya\",\n  \"titik_a\": \"Surabaya\",\n  \"titik_b\": \"Jakarta\",\n  \"jenis_barang\": \"Elektronik\",\n  \"driver_id\": 1,\n  \"driver_nama\": \"Budi Santoso\",\n  \"jarak_km\": 800,\n  \"konsumsi_bbm\": 5,\n  \"harga_bbm\": 10000,\n  \"biaya_tol\": 350000,\n  \"biaya_makan\": 150000,\n  \"nilai_tagihan\": 5000000,\n  \"nopol_truck\": \"L 1234 XY\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Update Order",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"JALAN\",\n  \"lokasi_terakhir\": \"Cirebon\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/ORD-001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "ORD-001"]
+            }
+          }
+        },
+        {
+          "name": "Update Status Order",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SELESAI\",\n  \"keterangan\": \"Barang telah diterima dengan baik\",\n  \"updated_by\": \"Admin\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/ORD-001/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "ORD-001", "status"]
+            }
+          }
+        },
+        {
+          "name": "Assign Driver",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"driver_id\": 1,\n  \"driver_nama\": \"Budi Santoso\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/ORD-004/assign-driver",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "ORD-004", "assign-driver"]
+            }
+          }
+        },
+        {
+          "name": "Upload POD",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pod_surat_jalan\": \"https://example.com/foto1.jpg\",\n  \"pod_barang_sampai\": \"https://example.com/foto2.jpg\",\n  \"pod_notes\": \"Barang diterima pukul 14.00 WIB\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/ORD-001/pod",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "ORD-001", "pod"]
+            }
+          }
+        },
+        {
+          "name": "Delete Order",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/orders/ORD-005",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "ORD-005"]
+            }
+          }
+        },
+        {
+          "name": "Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/orders/stats/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "stats", "dashboard"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚛 Shipments (Legacy Tracking)",
+      "item": [
+        {
+          "name": "List Shipments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/shipments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments"]
+            }
+          }
+        },
+        {
+          "name": "Get Shipment by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/shipments/ORD-001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments", "ORD-001"]
+            }
+          }
+        },
+        {
+          "name": "Create Shipment",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"ORD-005\",\n  \"pengirim\": \"PT Maju Jaya\",\n  \"wa\": \"081234567890\",\n  \"barang\": \"Elektronik\",\n  \"asal\": \"Surabaya\",\n  \"tujuan\": \"Jakarta\",\n  \"armada\": \"CDD\",\n  \"nopol\": \"L 1234 XY\",\n  \"driver\": \"Budi Santoso\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/shipments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments"]
+            }
+          }
+        },
+        {
+          "name": "Update Position",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lat\": -7.7156,\n  \"lng\": 110.6122,\n  \"lokasi\": \"Klaten\",\n  \"progress\": 50\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/shipments/ORD-001/position",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments", "ORD-001", "position"]
+            }
+          }
+        },
+        {
+          "name": "Delete Shipment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/shipments/ORD-005",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shipments", "ORD-005"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📍 Tracking",
+      "item": [
+        {
+          "name": "Track by Resi",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/track/ORD-001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "track", "ORD-001"]
+            },
+            "description": "Tracking pengiriman berdasarkan nomor resi (mencari di shipments dan orders)"
+          }
+        },
+        {
+          "name": "Get Position Only",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/track/ORD-001/position",
+              "host": ["{{base_url}}"],
+              "path": ["api", "track", "ORD-001", "position"]
+            }
+          }
+        },
+        {
+          "name": "Batch Tracking",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resi_list\": [\"ORD-001\", \"ORD-002\", \"ORD-003\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/track/batch",
+              "host": ["{{base_url}}"],
+              "path": ["api", "track", "batch"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👨‍✈️ Drivers",
+      "item": [
+        {
+          "name": "List Drivers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/drivers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "drivers"]
+            }
+          }
+        },
+        {
+          "name": "Available Drivers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/drivers/available/list",
+              "host": ["{{base_url}}"],
+              "path": ["api", "drivers", "available", "list"]
+            }
+          }
+        },
+        {
+          "name": "Create Driver",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Budi Santoso\",\n  \"telepon\": \"081234567890\",\n  \"nopol_truck\": \"L 1234 XY\",\n  \"armada\": \"CDD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/drivers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "drivers"]
+            }
+          }
+        },
+        {
+          "name": "Driver Log (Update dari Sopir)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": \"ORD-001\",\n  \"driver_id\": 1,\n  \"driver_nama\": \"Budi Santoso\",\n  \"status_update\": \"JALAN\",\n  \"foto_url\": \"https://example.com/foto.jpg\",\n  \"catatan\": \"Barang aman, menuju tujuan\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/drivers/logs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "drivers", "logs"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Customers",
+      "item": [
+        {
+          "name": "List Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/customers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "customers"]
+            }
+          }
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"PT Maju Jaya\",\n  \"telepon\": \"031-1234567\",\n  \"alamat\": \"Jl. Raya Surabaya No. 1\",\n  \"email\": \"info@maju-jaya.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/customers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "customers"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💰 Billing",
+      "item": [
+        {
+          "name": "List Billing",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/billing",
+              "host": ["{{base_url}}"],
+              "path": ["api", "billing"]
+            }
+          }
+        },
+        {
+          "name": "Ready for Billing",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/billing/ready/list",
+              "host": ["{{base_url}}"],
+              "path": ["api", "billing", "ready", "list"]
+            }
+          }
+        },
+        {
+          "name": "Update Billing Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"LUNAS\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/billing/ORD-001/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "billing", "ORD-001", "status"]
+            }
+          }
+        },
+        {
+          "name": "Billing Report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/billing/report/summary?start_date=2026-01-01&end_date=2026-12-31",
+              "host": ["{{base_url}}"],
+              "path": ["api", "billing", "report", "summary"],
+              "query": [
+                {"key": "start_date", "value": "2026-01-01"},
+                {"key": "end_date", "value": "2026-12-31"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧮 Uang Jalan",
+      "item": [
+        {
+          "name": "List Templates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/uang-jalan/templates",
+              "host": ["{{base_url}}"],
+              "path": ["api", "uang-jalan", "templates"]
+            }
+          }
+        },
+        {
+          "name": "Calculate Uang Jalan",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jarak_km\": 800,\n  \"konsumsi_bbm\": 5,\n  \"harga_bbm\": 10000,\n  \"biaya_tol\": 350000,\n  \"biaya_makan\": 150000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/uang-jalan/calculate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "uang-jalan", "calculate"]
+            }
+          }
+        },
+        {
+          "name": "Calculate by Template",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"template_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/uang-jalan/calculate-by-template",
+              "host": ["{{base_url}}"],
+              "path": ["api", "uang-jalan", "calculate-by-template"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}

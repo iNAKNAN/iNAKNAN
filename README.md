@@ -227,6 +227,59 @@ Klik thumbnail di bawah untuk menonton simulasi lengkap aplikasi TrukJatim (2 me
 
 ---
 
+## 📥 Postman Collection
+
+Import file collection ini ke Postman untuk test semua API secara instan:
+
+📄 [`TrukJatim-API.postman_collection.json`](./TrukJatim-API.postman_collection.json)
+
+**Cara import:**
+1. Buka Postman → **File → Import**
+2. Pilih file `TrukJatim-API.postman_collection.json`
+3. Klik **Import**
+4. Semua endpoint siap di-test!
+
+---
+
+## 🗄️ Database Schema
+
+Sistem ini menggunakan **2 database**:
+
+### 1. Tracking Database (SQLite)
+| Tabel | Deskripsi |
+|-------|-----------|
+| `shipments` | Data pengiriman legacy (tracking online) |
+| `shipment_history` | Timeline/status history setiap pengiriman |
+
+### 2. MVP Database (SQLite)
+| Tabel | Deskripsi |
+|-------|-----------|
+| `customers` | Data pelanggan |
+| `drivers` | Data sopir & kendaraan |
+| `orders` | Order pengiriman lengkap dengan uang jalan, POD, tagihan |
+| `driver_logs` | Log update dari sopir (foto, status, catatan) |
+| `order_history` | Riwayat perubahan status order |
+| `uang_jalan_templates` | Template perhitungan biaya perjalanan |
+
+### Entity Relationship Diagram
+
+```
+┌─────────────┐       ┌─────────────┐       ┌─────────────┐
+│  customers  │◄──────┤    orders   │──────►│   drivers   │
+│  (pelanggan)│  1:N  │  (pengiriman)│  N:1  │   (sopir)   │
+└─────────────┘       └──────┬──────┘       └─────────────┘
+                             │
+              ┌──────────────┼──────────────┐
+              │              │              │
+              ▼              ▼              ▼
+     ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+     │driver_logs  │ │order_history│ │uang_jalan_  │
+     │(update sopir)│ │(timeline)   │ │  templates  │
+     └─────────────┘ └─────────────┘ └─────────────┘
+```
+
+---
+
 ## 📡 API Documentation
 
 Base URL: `http://localhost:3000`
