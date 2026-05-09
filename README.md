@@ -366,8 +366,7 @@ Harga BBM (Bio Solar, Pertalite, Pertamax) diatur oleh **admin via dashboard web
 | Jenis BBM | Harga Default |
 |-----------|---------------|
 | Bio Solar / Pertamina Dex | Rp 6.800/liter |
-| Pertalite | Rp 10.000/liter |
-| Pertamax | Rp 12.500/liter |
+| Solar Industri | Rp 7.200/liter |
 
 ### Cara Update Harga BBM
 

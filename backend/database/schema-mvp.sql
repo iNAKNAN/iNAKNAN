@@ -148,8 +148,6 @@ CREATE TABLE IF NOT EXISTS fuel_prices (
 -- Insert default fuel prices
 INSERT OR IGNORE INTO fuel_prices (jenis, nama, harga, satuan) VALUES 
 ('BIOSOLAR', 'Pertamina Dex / Bio Solar', 6800, 'liter'),
-('PERTALITE', 'Pertalite', 10000, 'liter'),
-('PERTAMAX', 'Pertamax', 12500, 'liter'),
 ('SOLAR', 'Solar Industri', 7200, 'liter');
 
 -- Trigger untuk auto-log perubahan status

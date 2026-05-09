@@ -345,8 +345,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     final fuelTypes = {
       'BIOSOLAR': 'Bio Solar / Pertamina Dex',
-      'PERTALITE': 'Pertalite',
-      'PERTAMAX': 'Pertamax',
+      'SOLAR': 'Solar Industri',
     };
 
     // Ambil harga BBM terbaru dari backend
