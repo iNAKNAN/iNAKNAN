@@ -97,7 +97,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(controller: namaCtrl, decoration: const InputDecoration(labelText: 'Nama *')),
-            TextField(controller: telpCtrl, decoration: const InputDecoration(labelText: 'Telepon')),
+            TextField(controller: telpCtrl, decoration: const InputDecoration(labelText: 'Telepon'), keyboardType: TextInputType.text),
             TextField(controller: alamatCtrl, decoration: const InputDecoration(labelText: 'Alamat')),
           ],
         ),
