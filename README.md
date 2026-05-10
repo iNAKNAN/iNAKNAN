@@ -6,7 +6,7 @@
   <a href="https://flutter.dev"><img src="https://img.shields.io/badge/Flutter-3.11+-02569B?style=flat&logo=flutter&logoColor=white" /></a>
   <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node.js-14+-339933?style=flat&logo=node.js&logoColor=white" /></a>
   <a href="https://www.sqlite.org"><img src="https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&logoColor=white" /></a>
-  <a href="https://github.com/iNAKNAN/iNAKNAN/releases/tag/v1.0.0"><img src="https://img.shields.io/badge/Release-v1.0.0-FF5A00?style=flat&logo=github" /></a>
+  <a href="https://github.com/iNAKNAN/iNAKNAN/releases/tag/v1.1.0"><img src="https://img.shields.io/badge/Release-v1.1.0-FF5A00?style=flat&logo=github" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat" /></a>
 </p>
 
@@ -110,7 +110,7 @@
 
 Cukup download dan install APK, tidak perlu clone repo:
 
-1. **Download APK** dari [GitHub Releases](https://github.com/iNAKNAN/iNAKNAN/releases/tag/v1.0.0)
+1. **Download APK** dari [GitHub Releases](https://github.com/iNAKNAN/iNAKNAN/releases/tag/v1.1.0)
 2. **Install** di Android (aktifkan *Install from unknown sources* jika diminta)
 3. **Buka aplikasi** dan mulai gunakan
 
@@ -162,7 +162,7 @@ flutter run
 
 | Platform | File |
 |----------|------|
-| Android | [**Download APK v3**](https://github.com/iNAKNAN/iNAKNAN/releases/download/v1.0.0/ekspedisi-app-release-v3.apk) |
+| Android | [**Download APK v5**](https://github.com/iNAKNAN/iNAKNAN/releases/download/v1.1.0/ekspedisi-app-release-v5.apk) |
 
 > **Note:** Untuk install, aktifkan **"Install from unknown sources"** di pengaturan Android.
 
@@ -184,7 +184,7 @@ Sopir dapat mengambil foto bukti serah terima barang langsung dari aplikasi mobi
 Ringkasan statistik operasional: total order, perjalanan aktif, penyelesaian, dan piutang.
 
 <p align="center">
-  <img src="screenshots/dashboard.jpeg" width="280" />
+  <img src="screenshots/dashboard_new.jpeg" width="280" />
 </p>
 
 ### 📦 Manajemen Orders
@@ -216,13 +216,13 @@ Sopir update status perjalanan dan upload foto bukti pengiriman.
 Klik thumbnail di bawah untuk menonton simulasi lengkap aplikasi TrukJatim (2 menit):
 
 <p align="center">
-  <a href="https://youtube.com/shorts/QXYaPUxnELk?feature=share" target="_blank">
-    <img src="https://img.youtube.com/vi/QXYaPUxnELk/0.jpg" width="360" alt="TrukJatim Demo Video" />
+  <a href="https://youtube.com/shorts/jB-oOtbvcmg?feature=share" target="_blank">
+    <img src="https://img.youtube.com/vi/jB-oOtbvcmg/0.jpg" width="360" alt="TrukJatim Demo Video" />
   </a>
 </p>
 
 <p align="center">
-  <a href="https://youtube.com/shorts/QXYaPUxnELk?feature=share">▶️ Tonton di YouTube</a>
+  <a href="https://youtube.com/shorts/jB-oOtbvcmg?feature=share">▶️ Tonton di YouTube</a>
 </p>
 
 ---
