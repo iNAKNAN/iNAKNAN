@@ -61,7 +61,7 @@ Buka `tracking_online.html` di browser (bisa pakai Live Server VS Code).
 3. Click "New Project" → "Deploy from GitHub repo"
 4. Pilih repository Anda
 5. Railway otomatis detect Node.js dan deploy
-6. Dapatkan public URL (contoh: `https://trukjatim-api.up.railway.app`)
+6. Dapatkan public URL (contoh: `https://inaknan-production.up.railway.app`)
 7. Update `CORS_ORIGIN` di environment variables dengan URL frontend Anda
 
 ### Opsi 2: Deploy ke Render (Gratis)

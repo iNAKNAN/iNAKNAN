@@ -30,14 +30,14 @@ PROJECT/
    - Atau gunakan `railway.api.toml`
 6. Deploy!
 
-Catat URL-nya: `https://ihandpump-api.up.railway.app`
+Catat URL-nya: `https://inaknan-production.up.railway.app`
 
 ### Step 2: Update Admin HTML
 
 Edit `backend/public/admin.html` baris 927:
 
 ```javascript
-const API_SERVICE_URL = 'https://ihandpump-api.up.railway.app'; // ← URL dari Step 1
+const API_SERVICE_URL = 'https://inaknan-production.up.railway.app'; // ← URL dari Step 1
 ```
 
 Commit dan push:
@@ -54,14 +54,14 @@ git push
    - **Start Command**: `node admin-server.js`
 3. Deploy!
 
-URL Admin: `https://admin-ihandpump.up.railway.app`
+URL Admin: `https://inaknan-production.up.railway.app/admin`
 
 ## 🔗 Hasil Akhir
 
 | Website | URL | Fungsi |
 |---------|-----|--------|
 | **Admin** | `https://admin-xxx.railway.app` | Panel admin untuk operator |
-| **Tracking** | `https://ihandpump-api.railway.app` | Public tracking + API |
+| **Tracking** | `https://inaknan-production.up.railway.app` | Public tracking + API |
 
 ## 💰 Biaya
 
