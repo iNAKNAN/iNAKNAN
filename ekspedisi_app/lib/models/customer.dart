@@ -3,7 +3,6 @@ class Customer {
   final String nama;
   final String? telepon;
   final String? alamat;
-  final String? email;
   final String? createdAt;
 
   Customer({
@@ -11,7 +10,6 @@ class Customer {
     required this.nama,
     this.telepon,
     this.alamat,
-    this.email,
     this.createdAt,
   });
 
@@ -21,7 +19,6 @@ class Customer {
       nama: json['nama'] ?? '',
       telepon: json['telepon'],
       alamat: json['alamat'],
-      email: json['email'],
       createdAt: json['created_at'],
     );
   }
@@ -31,7 +28,6 @@ class Customer {
       'nama': nama,
       'telepon': telepon,
       'alamat': alamat,
-      'email': email,
     };
   }
 }

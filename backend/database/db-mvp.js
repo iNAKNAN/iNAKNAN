@@ -163,7 +163,6 @@ class DatabaseMVP {
           nama VARCHAR(255) NOT NULL,
           telepon VARCHAR(20),
           alamat TEXT,
-          email VARCHAR(255),
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `);
@@ -387,18 +386,18 @@ class DatabaseMVP {
     return await this.get('SELECT * FROM customers WHERE id = ?', [id]);
   }
 
-  async createCustomer({ nama, telepon, alamat, email }) {
+  async createCustomer({ nama, telepon, alamat }) {
     const result = await this.run(
-      'INSERT INTO customers (nama, telepon, alamat, email) VALUES (?, ?, ?, ?)',
-      [nama, telepon, alamat, email]
+      'INSERT INTO customers (nama, telepon, alamat) VALUES (?, ?, ?)',
+      [nama, telepon, alamat]
     );
     return await this.getCustomer(result.id || result.lastID);
   }
 
-  async updateCustomer(id, { nama, telepon, alamat, email }) {
+  async updateCustomer(id, { nama, telepon, alamat }) {
     await this.run(
-      'UPDATE customers SET nama = ?, telepon = ?, alamat = ?, email = ? WHERE id = ?',
-      [nama, telepon, alamat, email, id]
+      'UPDATE customers SET nama = ?, telepon = ?, alamat = ? WHERE id = ?',
+      [nama, telepon, alamat, id]
     );
     return await this.getCustomer(id);
   }

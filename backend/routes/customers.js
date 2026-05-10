@@ -46,7 +46,7 @@ router.get('/:id', async (req, res) => {
 // POST /api/customers - Create customer
 router.post('/', async (req, res) => {
   try {
-    const { nama, telepon, alamat, email } = req.body;
+    const { nama, telepon, alamat } = req.body;
 
     if (!nama) {
       return res.status(400).json({
@@ -58,8 +58,7 @@ router.post('/', async (req, res) => {
     const newCustomer = await db.createCustomer({
       nama,
       telepon: telepon || '',
-      alamat: alamat || '',
-      email: email || ''
+      alamat: alamat || ''
     });
 
     res.status(201).json({

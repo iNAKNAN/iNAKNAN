@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS customers (
     nama TEXT NOT NULL,
     telepon TEXT,
     alamat TEXT,
-    email TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
